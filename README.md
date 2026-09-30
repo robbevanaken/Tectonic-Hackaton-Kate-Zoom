@@ -3,6 +3,8 @@
 > Hackathon prototype (Tectonic × KBC, Gent, 30 Sept 2026). Challenge: *understand what each customer needs and respond at exactly the right moment.*
 > All data in this repo is fictional.
 
+![Kate Zoom: five key screens](docs/kate-zoom-overview.png)
+
 Every KBC customer already tells the bank, month after month, where their money goes. **Kate Zoom** turns that into a quiet, personal price-watch inside the KBC app:
 
 1. **Spot** — builds a recurring-spend profile from the customer's own transactions (energy, telecom, mobile, insurance, groceries, fuel, streaming) plus physical purchases from digital receipts.
@@ -16,9 +18,11 @@ Partners can offer exclusive **KBC-klantendeals**, shown transparently but exclu
 
 | | | |
 |---|---|---|
-| ![Push at the right moment](docs/screenshots/01-home-push.jpg) | ![Kate Zoom overview](docs/screenshots/02-overview.jpg) | ![Energy tip](docs/screenshots/03-energy-tip.jpg) |
-| ![Choose what to share](docs/screenshots/04-share-consent.jpg) | ![Provider page, prefilled](docs/screenshots/05-provider-prefilled.jpg) | ![Pause streaming services](docs/screenshots/06-streaming-tip.jpg) |
-| ![Same product, cheaper, still returnable](docs/screenshots/07-purchase-tip.jpg) | ![Invest the savings via KBC or Bolero](docs/screenshots/08-invest-bolero.jpg) | ![What Kate Zoom is, in one screen](docs/screenshots/09-about.jpg) |
+| ![Push at the right moment](docs/screenshots/framed/01-home-push.png) | ![Kate Zoom overview](docs/screenshots/framed/02-overview.png) | ![Energy tip](docs/screenshots/framed/03-energy-tip.png) |
+| ![Choose what to share](docs/screenshots/framed/04-share-consent.png) | ![Provider page, prefilled](docs/screenshots/framed/05-provider-prefilled.png) | ![Pause streaming services](docs/screenshots/framed/06-streaming-tip.png) |
+| ![Same product, cheaper, still returnable](docs/screenshots/framed/07-purchase-tip.png) | ![Invest the savings via KBC or Bolero](docs/screenshots/framed/08-invest-bolero.png) | ![What Kate Zoom is](docs/screenshots/framed/09-about.png) |
+
+Full-resolution screens and a description of each are in [docs/screenshots](docs/screenshots/).
 
 ## Run it
 
