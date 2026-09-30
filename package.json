@@ -1,0 +1,17 @@
+{
+  "name": "kate-switch",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Kate Switch — KBC hackathon: spending-behaviour analysis that nudges customers to better deals at exactly the right moment.",
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,cyan \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",
+    "build": "npm run build -w apps/api && npm run build -w apps/web",
+    "test": "npm run test -w apps/api",
+    "lint": "npm run typecheck -w apps/api && npm run typecheck -w apps/web"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": { "node": ">=20" }
+}
