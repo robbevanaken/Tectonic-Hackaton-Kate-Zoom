@@ -52,12 +52,12 @@ export function Chips() {
 function AccountCard({ name, balance, dark }: { name: string; balance: string; dark?: boolean }) {
   const nav = useNav();
   return (
-    <button onClick={() => nav.demo(name)} className={`relative h-[210px] text-left w-[150px] shrink-0 overflow-hidden rounded-[20px] p-3 text-white shadow-card ${dark ? "bg-gradient-to-br from-[#2A5A96] via-[#1F4B84] to-[#173A67]" : "bg-gradient-to-br from-[#4BC7F4] via-[#2DB0E8] to-[#1A97D6]"}`}>
+    <button onClick={() => nav.demo(name)} className={`relative flex h-[210px] w-[150px] shrink-0 flex-col overflow-hidden rounded-[20px] text-left text-white shadow-card ${dark ? "bg-gradient-to-br from-[#2A5A96] via-[#1F4B84] to-[#173A67]" : "bg-gradient-to-br from-[#4BC7F4] via-[#2DB0E8] to-[#1A97D6]"}`}>
       <div className="absolute -right-6 -top-10 h-32 w-32 rotate-12 bg-white/10" />
       <div className="absolute -left-10 bottom-0 h-28 w-40 -rotate-12 bg-white/5" />
       <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-white/90 text-kbc-blue"><Pencil size={14} /></span>
-      <div className="mt-6 flex justify-center"><Wallet size={64} strokeWidth={1.3} /></div>
-      <div className="mt-4 rounded-b-[16px] bg-white/95 px-2 pb-2 pt-2 text-kbc-navy">
+      <div className="relative grid flex-1 place-items-center"><Wallet size={56} strokeWidth={1.3} /></div>
+      <div className="relative bg-white/95 px-3 pb-3 pt-2.5 text-kbc-navy">
         <div className="truncate text-[13px] font-extrabold uppercase tracking-wide">{name}</div>
         <div className="mt-0.5 text-[15px] font-bold">{balance}</div>
         <div className="mt-2 h-1.5 rounded-full bg-kbc-sky" />
