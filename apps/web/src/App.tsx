@@ -48,7 +48,7 @@ export default function App() {
         setSpending(null);
         setSavings(null);
         setPush(null);
-        setPushReason("Kate Zoom staat uit.");
+        setPushReason("Kate Zoom is off.");
         return;
       }
       const [{ insights: ins }, sp, n, sv] = await Promise.all([api.insights(), api.spending(), api.notification(), api.savings()]);
@@ -67,7 +67,7 @@ export default function App() {
         return;
       }
       // Customer-facing wording, never raw status codes.
-      setError(e instanceof ApiError && e.status === 429 ? "Even rustig aan. Probeer het zo opnieuw." : "Kate is even niet bereikbaar. Probeer het zo opnieuw.");
+      setError(e instanceof ApiError && e.status === 429 ? "One moment please. Try again shortly." : "Kate is not reachable right now. Try again shortly.");
     }
   }, []);
 
@@ -155,7 +155,7 @@ export default function App() {
       )}
       <Push
         insight={push}
-        lead={pushReason.startsWith("Eind van je maand.") && me?.daysToPayday ? (me.daysToPayday === 1 ? "Morgen komt je loon." : `Nog ${me.daysToPayday} dagen tot je loon.`) : undefined}
+        lead={pushReason.startsWith("End of your month.") && me?.daysToPayday ? (me.daysToPayday === 1 ? "Payday is tomorrow." : `${me.daysToPayday} days until payday.`) : undefined}
         onOpen={openPush}
         onClose={closePush}
       />
@@ -202,7 +202,7 @@ export default function App() {
         />
       )}
       {screen.name === "placeholder" && <PlaceholderScreen title={screen.title} onBack={() => setScreen(screen.from)} onZoom={() => setScreen({ name: "switch" })} />}
-      {screen.name === "invest" && !savings && <PlaceholderScreen title="Beleggen" onBack={() => setScreen({ name: "home" })} onZoom={() => setScreen({ name: "switch" })} />}
+      {screen.name === "invest" && !savings && <PlaceholderScreen title="Invest" onBack={() => setScreen({ name: "home" })} onZoom={() => setScreen({ name: "switch" })} />}
     </PhoneFrame>
     <DemoPanel me={me} persona={persona} reason={pushReason} onPersona={changePersona} onDemoDate={demoDate} onReset={reset} />
     </div>

@@ -5,7 +5,7 @@ import { eur, periodLabel } from "@/lib/format";
 import type { Insight } from "@/lib/api";
 
 export function Push({ insight, lead, onOpen, onClose }: { insight: Insight | null; lead?: string; onOpen: () => void; onClose: () => void }) {
-  // Like a real banner: it slides away on its own; the tip stays in "Voor jou" and Kate Zoom.
+  // Like a real banner: it slides away on its own; the tip stays in "For you" and Kate Zoom.
   useEffect(() => {
     if (!insight) return;
     const t = setTimeout(onClose, 7000);
@@ -30,9 +30,9 @@ export function Push({ insight, lead, onOpen, onClose }: { insight: Insight | nu
             <span className="min-w-0 flex-1">
               <span className="flex items-center justify-between text-[12px] text-kbc-muted">
                 <span className="flex items-center gap-1 font-bold text-kbc-text"><KateMark size={14} /> Kate</span>
-                <span>nu</span>
+                <span>now</span>
               </span>
-              <span className="block text-[14px] font-extrabold leading-tight text-kbc-text">Bespaar zo'n {eur(insight.savingsYear)} {periodLabel(insight.period)}</span>
+              <span className="block text-[14px] font-extrabold leading-tight text-kbc-text">Save about {eur(insight.savingsYear)} {periodLabel(insight.period)}</span>
               <span className="line-clamp-3 block text-[13px] leading-snug text-kbc-text">{lead && <b>{lead} </b>}{insight.moments.filter((m) => m.type !== "budget_squeeze").sort((a, b) => b.weight - a.weight)[0]?.reason ?? insight.whyNow}</span>
             </span>
           </button>

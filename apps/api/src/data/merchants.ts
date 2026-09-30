@@ -13,7 +13,7 @@ export const MERCHANTS: Merchant[] = [
   { id: "telenet", name: "Telenet", category: "telecom", patterns: ["telenet"], quality: 4.0 },
   { id: "proximus-home", name: "Proximus (internet)", category: "telecom", patterns: ["proximus internet", "proximus flex"], quality: 4.2 },
   // Mobile
-  { id: "proximus-mobile", name: "Proximus (mobiel)", category: "mobile", patterns: ["proximus mobile", "proximus gsm"], quality: 4.1 },
+  { id: "proximus-mobile", name: "Proximus (mobile)", category: "mobile", patterns: ["proximus mobile", "proximus gsm"], quality: 4.1 },
   { id: "orange", name: "Orange", category: "mobile", patterns: ["orange belgium", "orange mobile"], quality: 4.1 },
   { id: "mobile-vikings", name: "Mobile Vikings", category: "mobile", patterns: ["mobile vikings"], quality: 4.0 },
   // Streaming
@@ -40,7 +40,7 @@ export const MERCHANTS: Merchant[] = [
   { id: "delijn", name: "De Lijn", category: "other", patterns: ["de lijn"], quality: 3.5 },
   { id: "bakkerij", name: "Bakkerij Van Hoof", category: "other", patterns: ["bakkerij"], quality: 4.6 },
   { id: "restaurant", name: "Restaurants", category: "leisure", patterns: ["restaurant", "brasserie", "pizzeria"], quality: 4.0 },
-  { id: "salary", name: "Loon", category: "income", patterns: ["loon", "salaris", "payroll"], quality: 0 },
+  { id: "salary", name: "Salary", category: "income", patterns: ["loon", "salaris", "payroll"], quality: 0 },
 ];
 
 export const MERCHANT_BY_ID = new Map(MERCHANTS.map((m) => [m.id, m]));

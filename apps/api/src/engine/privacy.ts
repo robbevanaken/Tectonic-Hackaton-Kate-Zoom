@@ -21,8 +21,8 @@ export function exportKateData(c: Customer, asOf: string) {
   return {
     exportedAt: new Date().toISOString(),
     controller: "KBC Bank NV",
-    purpose: "Kate Zoom: besparingstips op basis van je eigen uitgaven",
-    legalBasis: "Toestemming (AVG art. 6.1.a), altijd intrekbaar",
+    purpose: "Kate Zoom: saving tips based on your own spending",
+    legalBasis: "Consent (GDPR art. 6.1.a), can be withdrawn at any time",
     consent: c.consent,
     insights: insights.map(({ id, title, category, savingsYear, period, moments, status }) => ({ id, title, category, savingsYear, period, moments: moments.map((m) => m.type), status })),
     budgetCycle: cycle,

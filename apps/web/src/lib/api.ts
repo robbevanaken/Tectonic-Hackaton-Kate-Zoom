@@ -46,8 +46,8 @@ export interface Tx { id: string; date: string; amount: number; merchantName: st
 
 const PERSONA_KEY = "kate-zoom-persona";
 export const PERSONAS = [
-  { token: "demo-thomas", label: "Thomas (kan besparen)" },
-  { token: "demo-lien", label: "Lien (zit al goed)" },
+  { token: "demo-thomas", label: "Thomas (can save)" },
+  { token: "demo-lien", label: "Lien (already on good deals)" },
 ];
 
 export function getPersona(): string {
@@ -116,7 +116,7 @@ export const api = {
     const url = URL.createObjectURL(await res.blob());
     const a = document.createElement("a");
     a.href = url;
-    a.download = "kate-zoom-gegevens.json";
+    a.download = "kate-zoom-data.json";
     a.click();
     URL.revokeObjectURL(url);
   },

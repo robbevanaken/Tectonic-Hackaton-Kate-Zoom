@@ -33,7 +33,7 @@ function relevance(savingsYear: number, confidence: number, moments: Moment[]): 
 }
 
 function whyNow(moments: Moment[]): string {
-  if (moments.length === 0) return "Goedkoper, zelfde kwaliteit.";
+  if (moments.length === 0) return "Cheaper, same quality.";
   return [...moments].sort((a, b) => b.weight - a.weight)[0].reason;
 }
 
@@ -60,7 +60,7 @@ function switchInsight(r: RecurringSpend, asOf: string, all: RecurringSpend[], f
     id,
     kind: match ? "switch" : "creep",
     category: r.category,
-    title: match ? `${r.merchantName} → ${match.offer.provider}` : `${r.merchantName} wordt duurder`,
+    title: match ? `${r.merchantName} → ${match.offer.provider}` : `${r.merchantName} is getting more expensive`,
     current: { name: r.merchantName, monthly: r.currentMonthly, quality: r.quality },
     alternative: match
       ? { offerId: match.offer.id, provider: match.offer.provider, monthly: match.monthly, quality: match.offer.quality, source: match.offer.source, partner: match.offer.partner, partnerDeal: match.offer.partnerDeal, note: match.offer.note, switchEffort: match.offer.switchEffort }
@@ -95,7 +95,7 @@ function overlapInsight(all: RecurringSpend[], asOf: string, feedback: Feedback[
     id,
     kind: "overlap",
     category: "streaming",
-    title: `${streaming.length} streamingdiensten`,
+    title: `${streaming.length} streaming services`,
     current: { name: streaming.map((s) => s.merchantName).join(", "), monthly: total, quality: 0 },
     services: streaming.map((s) => ({ name: s.merchantName, monthly: s.currentMonthly })).sort((a, b) => b.monthly - a.monthly),
     savingsMonth,
@@ -196,23 +196,23 @@ export function pickNotification(insights: Insight[], customer: Customer, asOf: 
   const last = customer.notified[customer.notified.length - 1];
   if (last) {
     const days = (Date.parse(asOf) - Date.parse(last.at)) / 86_400_000;
-    if (days < PUSH_COOLDOWN_DAYS) return { insight: null, reason: `Deze week al een melding gestuurd.` };
+    if (days < PUSH_COOLDOWN_DAYS) return { insight: null, reason: `Already sent a notification this week.` };
   }
   const alreadySent = new Set(customer.notified.map((n) => n.insightId));
   const eligible = insights.filter((i) => i.status === "new" && i.savingsYear >= MIN_SAVINGS_YEAR_FOR_PUSH && !alreadySent.has(i.id));
-  if (eligible.length === 0) return { insight: null, reason: "Geen melding nodig." };
+  if (eligible.length === 0) return { insight: null, reason: "No notification needed." };
   // No moment, no push: tips without a timing signal wait in the module until one appears
   // (a debit, a contract date, a price change) — that is what "the right moment" means.
   const withMoment = eligible.filter((i) => i.moments.length > 0);
-  if (withMoment.length === 0) return { insight: null, reason: "Tip wacht op een goed moment." };
+  if (withMoment.length === 0) return { insight: null, reason: "Tip is waiting for a good moment." };
   const urgent = (i: Insight) => i.moments.some((m) => URGENT_MOMENTS.has(m.type));
   const pool = cycle.inSqueeze ? withMoment : withMoment.filter(urgent);
   if (pool.length === 0) {
-    const wait = cycle.daysToPayday !== null ? ` over ${Math.max(0, cycle.daysToPayday - 5)} dagen` : " eind van de maand";
-    return { insight: null, reason: `Stil. Volgende melding${wait}.` };
+    const wait = cycle.daysToPayday !== null ? ` in ${Math.max(0, cycle.daysToPayday - 5)} days` : " at the end of the month";
+    return { insight: null, reason: `Quiet. Next notification${wait}.` };
   }
   pool.sort((a, b) => b.relevance - a.relevance);
   const pick = pool[0];
-  const why = cycle.inSqueeze && !urgent(pick) ? `Eind van je maand. ${pick.moments.find((m) => m.type === "budget_squeeze")!.reason}` : `Dringend. ${pick.moments.filter((m) => URGENT_MOMENTS.has(m.type))[0]?.reason ?? pick.whyNow}`;
+  const why = cycle.inSqueeze && !urgent(pick) ? `End of your month. ${pick.moments.find((m) => m.type === "budget_squeeze")!.reason}` : `Urgent. ${pick.moments.filter((m) => URGENT_MOMENTS.has(m.type))[0]?.reason ?? pick.whyNow}`;
   return { insight: pick, reason: why };
 }

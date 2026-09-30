@@ -26,20 +26,20 @@ export interface InvestOption {
 export const PLATFORMS: Record<Platform, { label: string; tagline: string; options: Record<string, InvestOption> }> = {
   kbc: {
     label: "KBC",
-    tagline: "KBC beheert je portefeuille volgens je profiel",
+    tagline: "KBC manages your portfolio to match your profile",
     options: {
-      defensief: { label: "Defensief", expectedReturn: 0.03, risk: "Laag risico, vooral obligaties" },
-      gebalanceerd: { label: "Gebalanceerd", expectedReturn: 0.05, risk: "Mix van aandelen en obligaties" },
-      dynamisch: { label: "Dynamisch", expectedReturn: 0.07, risk: "Vooral aandelen, grotere schommelingen" },
+      defensive: { label: "Defensive", expectedReturn: 0.03, risk: "Low risk, mostly bonds" },
+      balanced: { label: "Balanced", expectedReturn: 0.05, risk: "Mix of shares and bonds" },
+      dynamic: { label: "Dynamic", expectedReturn: 0.07, risk: "Mostly shares, bigger swings" },
     },
   },
   bolero: {
     label: "Bolero",
-    tagline: "Je belegt zelf via Bolero, met lage kosten",
+    tagline: "You invest yourself via Bolero, at low cost",
     options: {
-      obligaties: { label: "Obligatie-ETF", expectedReturn: 0.03, risk: "Breed mandje obligaties, lage kosten" },
-      mix: { label: "Mix-ETF", expectedReturn: 0.05, risk: "Aandelen en obligaties in één tracker" },
-      wereld: { label: "Wereld-ETF", expectedReturn: 0.07, risk: "Duizenden aandelen wereldwijd, schommelt meer" },
+      bonds: { label: "Bond ETF", expectedReturn: 0.03, risk: "Broad basket of bonds, low cost" },
+      mix: { label: "Mixed ETF", expectedReturn: 0.05, risk: "Shares and bonds in one tracker" },
+      world: { label: "World ETF", expectedReturn: 0.07, risk: "Thousands of shares worldwide, swings more" },
     },
   },
 };
@@ -79,7 +79,7 @@ export function entryFromInsight(i: Insight, asOf: string, paused?: string[]): S
   const chosen = i.kind === "overlap" && i.services && paused ? i.services.filter((s) => paused.includes(s.name)) : [];
   if (chosen.length) {
     const amount = Math.round(chosen.reduce((sum, s) => sum + s.monthly, 0) * 12 * 100) / 100;
-    return { id: i.id, date: asOf, label: `Gepauzeerd: ${chosen.map((s) => s.name).join(", ")}`, amount, period: "year" };
+    return { id: i.id, date: asOf, label: `Paused: ${chosen.map((s) => s.name).join(", ")}`, amount, period: "year" };
   }
   return { id: i.id, date: asOf, label: i.alternative ? `${i.current.name} → ${i.alternative.provider}` : i.title, amount: i.savingsYear, period: i.period };
 }

@@ -29,7 +29,7 @@ function auth(req: Request, res: Response, next: NextFunction) {
 
 function requireConsent(req: Request, res: Response, next: NextFunction) {
   if (!(req as AuthedRequest).customer.consent) {
-    res.status(403).json({ error: "consent_required", message: "Kate mag je uitgaven niet analyseren zonder je toestemming." });
+    res.status(403).json({ error: "consent_required", message: "Kate cannot analyse your spending without your consent." });
     return;
   }
   next();
@@ -69,7 +69,7 @@ me.post("/consent", (req, res) => {
 /** Right of access / portability: download everything Kate Zoom holds. */
 me.get("/export", (req, res) => {
   const c = (req as AuthedRequest).customer;
-  res.setHeader("Content-Disposition", 'attachment; filename="kate-zoom-gegevens.json"');
+  res.setHeader("Content-Disposition", 'attachment; filename="kate-zoom-data.json"');
   res.json(exportKateData(c, asOf(c)));
 });
 

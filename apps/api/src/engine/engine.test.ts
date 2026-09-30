@@ -158,7 +158,7 @@ test("organic timing: payday detected, soft tips wait for the end of the custome
   const sep30 = pickNotification(analyze(thomas, "2026-09-30").insights, thomas, "2026-09-30");
   assert.equal(sep30.insight?.category, "energy");
   assert.ok(sep30.insight!.moments.some((m) => m.type === "budget_squeeze"));
-  assert.match(sep30.reason, /Eind van je maand/);
+  assert.match(sep30.reason, /End of your month/);
 
   // 10 Sept: mid-month, nothing urgent → stay quiet even though tips exist.
   const sep10 = analyze(thomas, "2026-09-10");
@@ -169,14 +169,14 @@ test("organic timing: payday detected, soft tips wait for the end of the custome
   const sep15 = pickNotification(analyze(thomas, "2026-09-15").insights, thomas, "2026-09-15");
   assert.ok(sep15.insight);
   assert.ok(sep15.insight!.moments.some((m) => m.type === "contract_window"));
-  assert.match(sep15.reason, /^Dringend/);
+  assert.match(sep15.reason, /^Urgent/);
 });
 
 test("investing: KBC profiles and Bolero options, unknown options rejected", async () => {
   const { optionFor, PLATFORMS } = await import("./savings.js");
-  assert.ok(optionFor("kbc", "gebalanceerd"));
-  assert.ok(optionFor("bolero", "wereld"));
-  assert.equal(optionFor("bolero", "gebalanceerd"), null);
+  assert.ok(optionFor("kbc", "balanced"));
+  assert.ok(optionFor("bolero", "world"));
+  assert.equal(optionFor("bolero", "balanced"), null);
   assert.equal(Object.keys(PLATFORMS.bolero.options).length, 3);
 });
 

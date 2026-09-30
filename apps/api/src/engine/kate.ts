@@ -16,12 +16,12 @@ const cache = new Map<string, string>();
 
 export const kateEnabled = () => client !== null;
 
-const SYSTEM = `Je bent Kate, de digitale assistent van KBC. Je schrijft één korte, warme zin (max. 20 woorden, Nederlands, jij-vorm) over een besparingskans. Het scherm toont al de prijzen en scores.
-Regels:
-- Gebruik uitsluitend de feiten in het bericht. Verzin geen cijfers, aanbieders of voorwaarden.
-- Begin met de reden waarom dit nu relevant is.
-- Geen druk, geen uitroeptekens, geen emoji, geen aanhef.
-- Als het aanbod een KBC-product is, zeg eerlijk dat het van KBC is.`;
+const SYSTEM = `You are Kate, KBC's digital assistant. You write one short, warm sentence (max. 20 words, English, second person) about a saving opportunity. The screen already shows prices and scores.
+Rules:
+- Only use the facts in the message. Never invent numbers, providers or conditions.
+- Start with why this matters now.
+- No pressure, no exclamation marks, no emoji, no greeting.
+- If the offer is a KBC product, say honestly that it is from KBC.`;
 
 export async function explainWithKate(insight: Insight, _firstName: string): Promise<{ text: string; source: "claude" | "template" }> {
   const template = explainTemplate(insight);
@@ -32,14 +32,14 @@ export async function explainWithKate(insight: Insight, _firstName: string): Pro
 
   // Data minimisation: no name, no account data — only the aggregate facts of this tip.
   const facts = {
-    categorie: insight.category,
-    huidig: insight.current,
-    alternatief: insight.alternative ?? null,
-    besparing: insight.savingsYear,
-    besparing_type: insight.period === "once" ? "eenmalig" : "per jaar",
+    category: insight.category,
+    current: insight.current,
+    alternative: insight.alternative ?? null,
+    saving: insight.savingsYear,
+    saving_period: insight.period === "once" ? "one-off" : "per year",
     product: insight.product ?? null,
-    waarom_nu: insight.whyNow,
-    basistekst: template,
+    why_now: insight.whyNow,
+    base_text: template,
   };
   try {
     const response = await client.beta.messages.create({
@@ -49,7 +49,7 @@ export async function explainWithKate(insight: Insight, _firstName: string): Pro
       fallbacks: "default",
       output_config: { effort: "low" },
       system: [{ type: "text", text: SYSTEM, cache_control: { type: "ephemeral" } }],
-      messages: [{ role: "user", content: `<feiten>${JSON.stringify(facts)}</feiten>\nHerschrijf de basistekst in jouw stem.` }],
+      messages: [{ role: "user", content: `<facts>${JSON.stringify(facts)}</facts>\nRewrite the base text in your voice.` }],
     });
     if (response.stop_reason === "refusal") return { text: template, source: "template" };
     const text = response.content.filter((b) => b.type === "text").map((b) => b.text).join("").trim();

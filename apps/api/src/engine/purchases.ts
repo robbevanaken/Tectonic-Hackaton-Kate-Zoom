@@ -38,8 +38,8 @@ export function purchaseMatches(customer: Customer, asOf: string, offers: Produc
       saving,
       daysLeft,
       moments: [
-        { type: "return_window", weight: daysLeft <= 10 ? 0.5 : 0.3, reason: `Gekocht ${daysSince} dagen geleden, nog ${daysLeft} dagen retour.` },
-        { type: "price_drop", weight: 0.2, reason: `Nu € ${saving.toFixed(0)} goedkoper bij ${best.seller}.` },
+        { type: "return_window", weight: daysLeft <= 10 ? 0.5 : 0.3, reason: `Bought ${daysSince} days ago, ${daysLeft} days left to return it.` },
+        { type: "price_drop", weight: 0.2, reason: `Now €${saving.toFixed(0)} cheaper at ${best.seller}.` },
       ],
     });
   }

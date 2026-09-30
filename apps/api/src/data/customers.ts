@@ -52,35 +52,35 @@ function frequent(b: Builder, start: Date, everyDays: number, counterparty: stri
 
 function noise(b: Builder, start: Date) {
   // Restaurants, bol.com, Zalando, bakery, public transport
-  frequent(b, addDays(start, 3), 12, "Brasserie De Kroon", "Kaartbetaling", 28, 74);
-  frequent(b, addDays(start, 9), 25, "bol.com", "Online aankoop", 15, 90);
-  frequent(b, addDays(start, 17), 40, "Zalando SE", "Online aankoop", 45, 160);
-  frequent(b, addDays(start, 1), 6, "Bakkerij Van Hoof", "Kaartbetaling", 4, 14);
-  frequent(b, addDays(start, 2), 9, "De Lijn", "Mobiel ticket", 2.5, 2.5);
+  frequent(b, addDays(start, 3), 12, "Brasserie De Kroon", "Card payment", 28, 74);
+  frequent(b, addDays(start, 9), 25, "bol.com", "Online purchase", 15, 90);
+  frequent(b, addDays(start, 17), 40, "Zalando SE", "Online purchase", 45, 160);
+  frequent(b, addDays(start, 1), 6, "Bakkerij Van Hoof", "Card payment", 4, 14);
+  frequent(b, addDays(start, 2), 9, "De Lijn", "Mobile ticket", 2.5, 2.5);
 }
 
 function thomas(): Customer {
   const b: Builder = { tx: [], rand: rng(42), seq: 0 };
   const start = new Date("2025-08-01");
-  monthly(b, start, 1, "Payroll Novatek NV", "Loon", () => -3240); // credit
+  monthly(b, start, 1, "Payroll Novatek NV", "Salary", () => -3240); // credit
   // Energy: price creep — 142 → 148 → 168 (+18% vs first months)
-  monthly(b, start, 5, "Engie Electrabel", "Domiciliëring energie", (i) => (i < 5 ? 142 : i < 11 ? 148 : 168));
+  monthly(b, start, 5, "Engie Electrabel", "Direct debit energy", (i) => (i < 5 ? 142 : i < 11 ? 148 : 168));
   // Telecom: started 28/10/2025 → ~11 months at AS_OF (contract window) and debited 2 days ago (post-debit)
-  monthly(b, new Date("2025-10-28"), 28, "Telenet BV", "Domiciliëring internet + tv", () => 89);
-  monthly(b, start, 15, "Proximus Mobile", "Domiciliëring gsm", () => 25);
-  monthly(b, start, 12, "Netflix.com", "Abonnement", () => 13.99);
-  monthly(b, start, 3, "Disney Plus", "Abonnement", () => 9.99);
-  monthly(b, new Date("2026-02-01"), 20, "Streamz", "Abonnement", () => 12.99);
+  monthly(b, new Date("2025-10-28"), 28, "Telenet BV", "Direct debit internet + TV", () => 89);
+  monthly(b, start, 15, "Proximus Mobile", "Direct debit mobile", () => 25);
+  monthly(b, start, 12, "Netflix.com", "Subscription", () => 13.99);
+  monthly(b, start, 3, "Disney Plus", "Subscription", () => 9.99);
+  monthly(b, new Date("2026-02-01"), 20, "Streamz", "Subscription", () => 12.99);
   // Insurance: started 1/11/2025 → annual renewal approaching
-  monthly(b, new Date("2025-11-01"), 1, "AG Insurance", "Autoverzekering premie", () => 62);
-  frequent(b, addDays(start, 2), 7, "Delhaize Gent", "Kaartbetaling", 88, 142);
-  frequent(b, addDays(start, 4), 9, "TotalEnergies Station", "Brandstof", 58, 78);
+  monthly(b, new Date("2025-11-01"), 1, "AG Insurance", "Car insurance premium", () => 62);
+  frequent(b, addDays(start, 2), 7, "Delhaize Gent", "Card payment", 88, 142);
+  frequent(b, addDays(start, 4), 9, "TotalEnergies Station", "Fuel", 58, 78);
   noise(b, start);
   // A physical one-off purchase with a digital receipt (e-ticket via Kate Wallet).
-  push(b, new Date("2026-09-21"), -399, "MediaMarkt Gent", "Kaartbetaling");
+  push(b, new Date("2026-09-21"), -399, "MediaMarkt Gent", "Card payment");
   const tvTx = b.tx[b.tx.length - 1];
   const receipts: Receipt[] = [
-    { transactionId: tvTx.id, merchantId: "mediamarkt", product: "Sony WH-1000XM5 koptelefoon (zwart)", ean: "4548736000017", price: 399, date: tvTx.date, returnDays: 30 },
+    { transactionId: tvTx.id, merchantId: "mediamarkt", product: "Sony WH-1000XM5 headphones (black)", ean: "4548736000017", price: 399, date: tvTx.date, returnDays: 30 },
   ];
   b.tx.sort((x, y) => x.date.localeCompare(y.date));
   return {
@@ -94,9 +94,9 @@ function thomas(): Customer {
     receipts,
     // Fictional history: two tips Thomas already acted on earlier this year.
     savings: [
-      { id: "hist-gym", date: "2026-02-01", label: "Fitness Plus → SportCity (zelfde clubs)", amount: 96, period: "year" },
-      { id: "hist-laptop", date: "2026-06-14", label: "Laptop: prijsverschil terugbetaald", amount: 45, period: "once" },
-      { id: "hist-home", date: "2026-04-01", label: "Woningverzekering → KBC Woonverzekering", amount: 72, period: "year" },
+      { id: "hist-gym", date: "2026-02-01", label: "Fitness Plus → SportCity (same gyms)", amount: 96, period: "year" },
+      { id: "hist-laptop", date: "2026-06-14", label: "Laptop: price difference refunded", amount: 45, period: "once" },
+      { id: "hist-home", date: "2026-04-01", label: "Home insurance → KBC Home Insurance", amount: 72, period: "year" },
     ],
     feedback: [],
     notified: [],
@@ -107,13 +107,13 @@ function thomas(): Customer {
 function lien(): Customer {
   const b: Builder = { tx: [], rand: rng(7), seq: 0 };
   const start = new Date("2025-08-01");
-  monthly(b, start, 25, "Payroll Zorgpunt VZW", "Loon", () => -2410);
-  monthly(b, start, 8, "Bolt Energie", "Domiciliëring energie", () => 96);
-  monthly(b, start, 10, "Orange Belgium", "Domiciliëring gsm", () => 20);
-  monthly(b, start, 14, "Spotify AB", "Abonnement", () => 10.99);
-  monthly(b, start, 12, "Netflix.com", "Abonnement", () => 13.99);
-  frequent(b, addDays(start, 5), 7, "Colruyt Merelbeke", "Kaartbetaling", 60, 110);
-  frequent(b, addDays(start, 1), 14, "DATS 24", "Brandstof", 40, 60);
+  monthly(b, start, 25, "Payroll Zorgpunt VZW", "Salary", () => -2410);
+  monthly(b, start, 8, "Bolt Energie", "Direct debit energy", () => 96);
+  monthly(b, start, 10, "Orange Belgium", "Direct debit mobile", () => 20);
+  monthly(b, start, 14, "Spotify AB", "Subscription", () => 10.99);
+  monthly(b, start, 12, "Netflix.com", "Subscription", () => 13.99);
+  frequent(b, addDays(start, 5), 7, "Colruyt Merelbeke", "Card payment", 60, 110);
+  frequent(b, addDays(start, 1), 14, "DATS 24", "Fuel", 40, 60);
   noise(b, start);
   b.tx.sort((x, y) => x.date.localeCompare(y.date));
   return {

@@ -19,33 +19,33 @@ export function HomeScreen({ name, off, top, onOpenSwitch, onOpenInsight, onSett
         <AccountCards name={name} />
         <ShowPayments />
         <div className="mt-6 flex items-center justify-between px-4">
-          <h2 className="text-[22px] font-extrabold text-kbc-navy">Voor jou</h2>
-          <button onClick={onOpenSwitch} className="text-[15px] font-bold text-kbc-blue">Alle communicatie</button>
+          <h2 className="text-[22px] font-extrabold text-kbc-navy">For you</h2>
+          <button onClick={onOpenSwitch} className="text-[15px] font-bold text-kbc-blue">All messages</button>
         </div>
         <div className="mt-3 flex flex-col gap-3 px-4">
           {top ? (
             <ForYouCard kate label="Kate Zoom" highlight icon={<KateMark size={30} />} onClick={onOpenSwitch}>
-              <b>Bespaar {eur(top.savingsYear)} {periodLabel(top.period)}</b>
+              <b>Save {eur(top.savingsYear)} {periodLabel(top.period)}</b>
               <span className="block">{top.whyNow}</span>
             </ForYouCard>
           ) : (
             <ForYouCard kate label="Kate Zoom" highlight={!off} icon={<KateMark size={30} />} onClick={onOpenSwitch}>
-              {off ? "Kate Zoom staat uit. Zet aan om te besparen." : "Je vaste kosten zitten goed. Ik hou ze in het oog."}
+              {off ? "Kate Zoom is off. Turn it on to start saving." : "Your fixed costs look good. I'll keep an eye on them."}
             </ForYouCard>
           )}
           {!hidden.has("energy") && (
-            <ForYouCard kate icon={<HomeIcon size={30} strokeWidth={1.5} />} onClick={() => nav.demo("Energietips")} onDismiss={() => hide("energy")}>
-              Hoge energieprijzen? Met deze tips hou je de warmte binnen in je woning, en de winter buiten.
+            <ForYouCard kate icon={<HomeIcon size={30} strokeWidth={1.5} />} onClick={() => nav.demo("Energy tips")} onDismiss={() => hide("energy")}>
+              High energy prices? These tips keep the warmth in your home and the winter out.
             </ForYouCard>
           )}
           {!hidden.has("solar") && (
-            <ForYouCard icon={<Sun size={30} strokeWidth={1.5} />} onClick={() => nav.demo("Zonnepanelen")} onDismiss={() => hide("solar")}>
-              Zonnepanelen, de moeite waard? Ontdek in enkele tikken hoeveel het je kost én hoeveel het je bespaart.
+            <ForYouCard icon={<Sun size={30} strokeWidth={1.5} />} onClick={() => nav.demo("Solar panels")} onDismiss={() => hide("solar")}>
+              Solar panels, worth it? Find out in a few taps what they cost and what they save you.
             </ForYouCard>
           )}
           {!hidden.has("card") && (
-            <ForYouCard icon={<CreditCard size={30} strokeWidth={1.5} />} onClick={() => nav.demo("KBC-Kredietkaart")} onDismiss={() => hide("card")}>
-              Je eigen zin doen met de gratis KBC-Kredietkaart? Vraag ze meteen aan. Let op, geld lenen kost ook geld.
+            <ForYouCard icon={<CreditCard size={30} strokeWidth={1.5} />} onClick={() => nav.demo("KBC credit card")} onDismiss={() => hide("card")}>
+              Do things your way with the free KBC credit card? Apply right away. Note: borrowing money also costs money.
             </ForYouCard>
           )}
         </div>

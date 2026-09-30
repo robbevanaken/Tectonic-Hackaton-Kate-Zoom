@@ -18,7 +18,7 @@ export function detectMoments(r: RecurringSpend, asOf: string, peers: RecurringS
     moments.push({
       type: "price_creep",
       weight: Math.min(0.5, r.trendPct / 40),
-      reason: `${risePct.toFixed(0)}% duurder dan vorig jaar (${eur(first)} → ${eur(r.lastAmount)}).`,
+      reason: `${risePct.toFixed(0)}% more than last year (${eur(first)} → ${eur(r.lastAmount)}).`,
     });
   }
 
@@ -30,7 +30,7 @@ export function detectMoments(r: RecurringSpend, asOf: string, peers: RecurringS
     moments.push({
       type: "contract_window",
       weight: 0.35,
-      reason: `Contract 1 jaar op ${anniversary.toLocaleDateString("nl-BE", { day: "numeric", month: "long" })}: kosteloos overstappen.`,
+      reason: `Contract turns 1 year on ${anniversary.toLocaleDateString("en-GB", { day: "numeric", month: "long" })}: switch for free.`,
     });
   }
 
@@ -40,21 +40,21 @@ export function detectMoments(r: RecurringSpend, asOf: string, peers: RecurringS
     moments.push({
       type: "post_debit",
       weight: 0.3,
-      reason: daysSinceDebit === 0 ? `Vandaag ${eur(r.lastAmount)} afgeschreven.` : `${daysSinceDebit} dag${daysSinceDebit === 1 ? "" : "en"} geleden ${eur(r.lastAmount)} afgeschreven.`,
+      reason: daysSinceDebit === 0 ? `${eur(r.lastAmount)} debited today.` : `${eur(r.lastAmount)} debited ${daysSinceDebit} day${daysSinceDebit === 1 ? "" : "s"} ago.`,
     });
   }
 
   // 4. Seasonal: energy before winter, insurance before the renewal month.
   const month = Number(asOf.slice(5, 7));
   if (r.category === "energy" && (month === 9 || month === 10)) {
-    moments.push({ type: "seasonal", weight: 0.2, reason: "De winter komt: je duurste energiemaanden." });
+    moments.push({ type: "seasonal", weight: 0.2, reason: "Winter is coming: your most expensive energy months." });
   }
 
   // 5. Overlap: several subscriptions in the same category.
   const sameCategory = peers.filter((p) => p.category === r.category && p.cadence === "monthly");
   if (r.category === "streaming" && sameCategory.length >= 3) {
     const total = sameCategory.reduce((s, p) => s + p.currentMonthly, 0);
-    moments.push({ type: "overlap", weight: 0.25, reason: `${sameCategory.length} streamingdiensten, samen ${eur(total)}/maand.` });
+    moments.push({ type: "overlap", weight: 0.25, reason: `${sameCategory.length} streaming services, ${eur(total)}/month together.` });
   }
 
   return moments;

@@ -26,37 +26,37 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
     }).catch(() => setState("expired"));
   }, [token]);
 
-  const slug = (data?.provider ?? "aanbieder").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const slug = (data?.provider ?? "provider").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
   return (
     <div className="flex h-full flex-col bg-white">
       <StatusBar />
       <div className="flex items-center gap-2 border-b border-[#E6ECF2] px-3 pb-2 pt-1">
-        <button onClick={onClose} className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-kbc-text" aria-label="Sluiten"><X size={20} /></button>
+        <button onClick={onClose} className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-kbc-text" aria-label="Close"><X size={20} /></button>
         <div className="flex min-w-0 flex-1 items-center gap-1.5 rounded-full bg-kbc-bg px-3 py-1.5 text-[12px] text-kbc-muted">
           <Lock size={12} className="shrink-0" />
-          <span className="truncate">{slug}.partner.demo/overstappen</span>
+          <span className="truncate">{slug}.partner.demo/switch</span>
         </div>
       </div>
 
       <div className="no-scrollbar min-w-0 flex-1 overflow-y-auto px-5 pb-8 pt-5">
-        {state === "loading" && <div className="text-[14px] text-kbc-muted">Laden…</div>}
+        {state === "loading" && <div className="text-[14px] text-kbc-muted">Loading…</div>}
 
         {state === "expired" && (
           <div className="mt-10 flex flex-col items-center text-center">
             <AlertTriangle size={40} className="text-[#C27C00]" />
-            <h1 className="mt-3 text-[20px] font-extrabold text-kbc-text">Deze link is niet meer geldig</h1>
-            <p className="mt-1 text-[14px] text-kbc-muted">Start opnieuw vanuit je KBC-app.</p>
-            <button onClick={onClose} className="mt-6 h-12 rounded-full bg-kbc-navy px-6 text-[15px] font-bold text-white">Terug naar KBC</button>
+            <h1 className="mt-3 text-[20px] font-extrabold text-kbc-text">This link is no longer valid</h1>
+            <p className="mt-1 text-[14px] text-kbc-muted">Start again from your KBC app.</p>
+            <button onClick={onClose} className="mt-6 h-12 rounded-full bg-kbc-navy px-6 text-[15px] font-bold text-white">Back to KBC</button>
           </div>
         )}
 
         {state === "sent" && (
           <div className="mt-10 flex flex-col items-center text-center">
             <CheckCircle2 size={48} className="text-kbc-green" />
-            <h1 className="mt-3 text-[20px] font-extrabold text-kbc-text">Aanvraag ontvangen</h1>
+            <h1 className="mt-3 text-[20px] font-extrabold text-kbc-text">Request received</h1>
             
-            <button onClick={onSubmitted} className="mt-6 h-12 rounded-full bg-kbc-navy px-6 text-[15px] font-bold text-white">Terug naar KBC</button>
+            <button onClick={onSubmitted} className="mt-6 h-12 rounded-full bg-kbc-navy px-6 text-[15px] font-bold text-white">Back to KBC</button>
           </div>
         )}
 
@@ -66,7 +66,7 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
             <h1 className="mt-1 text-[22px] font-extrabold leading-tight text-kbc-text">{data.purpose}</h1>
             <div className="mt-3 flex items-start gap-2 rounded-[12px] bg-[#E6F4FB] p-3 text-[12px] leading-snug text-kbc-navy">
               <KateMark size={18} className="mt-0.5 shrink-0" />
-              <span className="min-w-0">Ingevuld via <b>Kate Zoom</b></span>
+              <span className="min-w-0">Filled in via <b>Kate Zoom</b></span>
             </div>
             <form
               className="mt-4 flex flex-col gap-3"
@@ -90,9 +90,9 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
               ))}
               <label className="mt-1 flex items-start gap-2 text-[12px] leading-snug text-kbc-muted">
                 <input type="checkbox" required className="mt-0.5 h-4 w-4 shrink-0" />
-                <span>Ik ga akkoord met de voorwaarden van {data.provider}.</span>
+                <span>I agree to the terms of {data.provider}.</span>
               </label>
-              <button type="submit" className="mt-2 h-12 w-full rounded-[12px] bg-kbc-text text-[15px] font-extrabold text-white">Aanvraag versturen</button>
+              <button type="submit" className="mt-2 h-12 w-full rounded-[12px] bg-kbc-text text-[15px] font-extrabold text-white">Send request</button>
             </form>
           </>
         )}

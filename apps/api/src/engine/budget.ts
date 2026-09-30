@@ -45,7 +45,7 @@ export function budgetCycle(txs: CategorizedTransaction[], asOf: string): Budget
 
 export function squeezeMoment(c: BudgetCycle): Moment | null {
   if (!c.inSqueeze || c.daysToPayday === null) return null;
-  const days = c.daysToPayday === 1 ? "Morgen komt je loon." : `Nog ${c.daysToPayday} dagen tot je loon.`;
-  return { type: "budget_squeeze", weight: 0.25, reason: `${days} Deze maand al € ${c.spentSincePayday.toLocaleString("nl-BE")} uitgegeven.` };
+  const days = c.daysToPayday === 1 ? "Payday is tomorrow." : `${c.daysToPayday} days until payday.`;
+  return { type: "budget_squeeze", weight: 0.25, reason: `${days} €${c.spentSincePayday.toLocaleString("en-GB")} spent this month.` };
 }
 

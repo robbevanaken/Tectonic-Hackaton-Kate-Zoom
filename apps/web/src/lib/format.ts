@@ -1,36 +1,36 @@
 export const eur = (n: number, digits = 0) =>
-  `€ ${n.toLocaleString("nl-BE", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
+  `€${n.toLocaleString("en-GB", { minimumFractionDigits: digits, maximumFractionDigits: digits })}`;
 
-export const score = (n: number) => n.toFixed(1).replace(".", ",");
+export const score = (n: number) => n.toFixed(1);
 
 export const CATEGORY_LABEL: Record<string, string> = {
-  energy: "Energie",
-  telecom: "Internet & tv",
-  mobile: "Gsm",
+  energy: "Energy",
+  telecom: "Internet & TV",
+  mobile: "Mobile",
   streaming: "Streaming",
-  insurance: "Verzekering",
-  groceries: "Boodschappen",
-  fuel: "Brandstof",
-  fashion: "Kleding",
-  leisure: "Vrije tijd",
-  electronics: "Aankoop",
-  other: "Overige",
-  income: "Inkomen",
+  insurance: "Insurance",
+  groceries: "Groceries",
+  fuel: "Fuel",
+  fashion: "Clothing",
+  leisure: "Leisure",
+  electronics: "Purchase",
+  other: "Other",
+  income: "Income",
 };
 
 export const MOMENT_LABEL: Record<string, string> = {
-  price_creep: "Prijs stijgt",
-  contract_window: "Contract loopt af",
-  post_debit: "Net afgeschreven",
-  overlap: "Dubbelop",
-  seasonal: "Seizoen",
-  better_deal: "Beter aanbod",
-  return_window: "Retour nog mogelijk",
-  price_drop: "Nu goedkoper",
-  budget_squeeze: "Eind van de maand",
+  price_creep: "Price going up",
+  contract_window: "Contract ending",
+  post_debit: "Just debited",
+  overlap: "Overlap",
+  seasonal: "Season",
+  better_deal: "Better offer",
+  return_window: "Still returnable",
+  price_drop: "Now cheaper",
+  budget_squeeze: "End of the month",
 };
 
-export const periodLabel = (period: "year" | "once") => (period === "once" ? "eenmalig" : "per jaar");
+export const periodLabel = (period: "year" | "once") => (period === "once" ? "one-off" : "a year");
 
 export const formatDate = (iso: string) =>
-  new Date(iso).toLocaleDateString("nl-BE", { day: "numeric", month: "long" });
+  new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "long" });

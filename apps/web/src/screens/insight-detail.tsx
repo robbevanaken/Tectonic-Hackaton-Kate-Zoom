@@ -36,15 +36,15 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
   const pausedYear = services.filter((x) => paused.has(x.name)).reduce((sum, x) => sum + x.monthly, 0) * 12;
   const a = insight.alternative;
   const done = insight.status !== "new";
-  const unit = insight.period === "once" ? "" : "/maand";
+  const unit = insight.period === "once" ? "" : "/month";
   const cta =
-    insight.kind === "overlap" ? `Pauzeer ${paused.size} abonnement${paused.size === 1 ? "" : "en"}` : insight.kind === "purchase" ? `Bekijk bij ${a?.provider}` : insight.category === "groceries" || insight.category === "fuel" ? `Probeer ${a?.provider}` : `Overstappen naar ${a?.provider}`;
+    insight.kind === "overlap" ? `Pause ${paused.size} subscription${paused.size === 1 ? "" : "s"}` : insight.kind === "purchase" ? `View at ${a?.provider}` : insight.category === "groceries" || insight.category === "fuel" ? `Try ${a?.provider}` : `Switch to ${a?.provider}`;
 
   return (
     <div className="flex h-full flex-col">
       <StatusBar />
       <div className="flex items-center gap-3 px-4 pb-2 pt-2">
-        <button onClick={onBack} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white shadow-card" aria-label="Terug"><ChevronLeft size={22} /></button>
+        <button onClick={onBack} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white shadow-card" aria-label="Back"><ChevronLeft size={22} /></button>
         <span className="truncate text-[13px] font-bold uppercase tracking-wide text-kbc-muted">{CATEGORY_LABEL[insight.category]}</span>
       </div>
 
@@ -73,13 +73,13 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
                 <button key={sv.name} onClick={() => togglePause(sv.name)} disabled={done} className={`flex w-full items-center gap-3 px-4 py-3 text-left ${idx ? "border-t border-kbc-bg" : ""}`}>
                   <span className={`min-w-0 flex-1 text-[15px] font-extrabold ${off ? "text-kbc-muted line-through" : "text-kbc-text"}`}>{sv.name}</span>
                   <span className={`shrink-0 text-[15px] font-bold ${off ? "text-kbc-muted line-through" : "text-kbc-text"}`}>{eur(sv.monthly, 2)}</span>
-                  <span className={`w-[82px] shrink-0 rounded-full py-1.5 text-center text-[12px] font-extrabold ${off ? "bg-kbc-navy text-white" : "bg-kbc-bg text-kbc-navy"}`}>{off ? "Pauzeren" : "Houden"}</span>
+                  <span className={`w-[82px] shrink-0 rounded-full py-1.5 text-center text-[12px] font-extrabold ${off ? "bg-kbc-navy text-white" : "bg-kbc-bg text-kbc-navy"}`}>{off ? "Pause" : "Keep"}</span>
                 </button>
               );
             })}
             <div className="flex items-center justify-between gap-3 bg-[#E9F7EE] px-4 py-3">
-              <span className="text-[14px] font-bold text-kbc-text">Besparing</span>
-              <span className="text-right text-[18px] font-extrabold text-kbc-green">{eur(pausedYear)} <span className="text-[12px]">per jaar</span></span>
+              <span className="text-[14px] font-bold text-kbc-text">Saving</span>
+              <span className="text-right text-[18px] font-extrabold text-kbc-green">{eur(pausedYear)} <span className="text-[12px]">a year</span></span>
             </div>
           </div>
         )}
@@ -87,18 +87,18 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
         {a && (
           <div className="mt-3 overflow-hidden rounded-card bg-white shadow-card">
             <div className="flex flex-col gap-2 p-4">
-              <PriceRow label={insight.kind === "purchase" ? "Betaald" : "Nu"} name={insight.current.name} price={insight.current.monthly} unit={unit} quality={insight.current.quality} />
+              <PriceRow label={insight.kind === "purchase" ? "Paid" : "Now"} name={insight.current.name} price={insight.current.monthly} unit={unit} quality={insight.current.quality} />
               <div className="flex items-center gap-2 text-kbc-muted"><span className="h-px flex-1 bg-kbc-bg" /><ArrowDown size={16} /><span className="h-px flex-1 bg-kbc-bg" /></div>
-              <PriceRow label={insight.kind === "purchase" ? "Zelfde product" : "Alternatief"} name={a.provider} price={a.monthly} unit={unit} quality={a.quality} accent />
+              <PriceRow label={insight.kind === "purchase" ? "Same product" : "Alternative"} name={a.provider} price={a.monthly} unit={unit} quality={a.quality} accent />
             </div>
             <div className="border-t border-kbc-bg px-4 py-3 text-[13px] leading-snug text-kbc-text">
               <div>{a.note}</div>
-              <div className="mt-1 text-[12px] text-kbc-muted">Bron: {a.source}</div>
-              {a.partnerDeal && <div className="mt-2 rounded-[10px] bg-[#E6F4FB] px-3 py-2 font-bold text-kbc-navy"><span className="flex items-start gap-1.5"><Gift size={15} className="mt-0.5 shrink-0" />{a.partnerDeal.replace("KBC-klantendeal: ", "")}</span><span className="block text-[11px] font-normal text-kbc-muted">KBC-partnerdeal · niet meegeteld in de vergelijking</span></div>}
-              {a.partner && <div className="mt-2 flex items-start gap-1.5 font-bold text-kbc-navy"><ShieldCheck size={15} className="mt-0.5 shrink-0" /><span>KBC-product</span></div>}
+              <div className="mt-1 text-[12px] text-kbc-muted">Source: {a.source}</div>
+              {a.partnerDeal && <div className="mt-2 rounded-[10px] bg-[#E6F4FB] px-3 py-2 font-bold text-kbc-navy"><span className="flex items-start gap-1.5"><Gift size={15} className="mt-0.5 shrink-0" />{a.partnerDeal.replace("KBC customer deal: ", "")}</span><span className="block text-[11px] font-normal text-kbc-muted">KBC partner deal · not counted in the comparison</span></div>}
+              {a.partner && <div className="mt-2 flex items-start gap-1.5 font-bold text-kbc-navy"><ShieldCheck size={15} className="mt-0.5 shrink-0" /><span>KBC product</span></div>}
             </div>
             <div className="flex items-center justify-between gap-3 bg-[#E9F7EE] px-4 py-3">
-              <span className="text-[14px] font-bold text-kbc-text">Besparing</span>
+              <span className="text-[14px] font-bold text-kbc-text">Saving</span>
               <span className="text-right text-[18px] font-extrabold text-kbc-green">{eur(insight.savingsYear)} <span className="text-[12px]">{periodLabel(insight.period)}</span></span>
             </div>
           </div>
@@ -107,7 +107,7 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
         {insight.byMonth.length > 0 && (
           <div className="mt-3 rounded-card bg-white p-4 shadow-card">
             <div className="flex items-center justify-between gap-2 text-[13px] font-bold text-kbc-muted">
-              <span>Wat je maandelijks betaalde</span>
+              <span>What you paid each month</span>
               {a && <span className="shrink-0 text-kbc-green">- - {a.provider.split(" ")[0]}</span>}
             </div>
             <div className="mt-3"><MiniBars data={insight.byMonth} alt={a?.monthly} /></div>
@@ -116,17 +116,17 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
         )}
 
         <button onClick={() => setWhy(!why)} className="mt-3 flex w-full items-center justify-between gap-2 rounded-card bg-white px-4 py-3 text-[14px] font-bold text-kbc-navy shadow-card">
-          <span className="flex items-center gap-2"><ShieldCheck size={18} className="shrink-0 text-kbc-blue" /> Waarom zie ik dit?</span>
+          <span className="flex items-center gap-2"><ShieldCheck size={18} className="shrink-0 text-kbc-blue" /> Why am I seeing this?</span>
           <ChevronDown size={18} className={`shrink-0 transition ${why ? "rotate-180" : ""}`} />
         </button>
         {why && (
           <div className="mt-2 rounded-card bg-white p-4 text-[13px] leading-relaxed text-kbc-text shadow-card">
             <ul className="list-disc space-y-1 pl-4">
-              <li>{insight.dataPoints} {insight.dataPoints === 1 ? "betaling" : "betalingen"} aan {insight.current.name}{insight.kind === "purchase" ? " + kasticket" : ""}</li>
-              <li>Zekerheid {Math.round(insight.confidence * 100)}%</li>
+              <li>{insight.dataPoints} {insight.dataPoints === 1 ? "payment" : "payments"} to {insight.current.name}{insight.kind === "purchase" ? " + receipt" : ""}</li>
+              <li>Confidence {Math.round(insight.confidence * 100)}%</li>
               {insight.moments.map((m) => <li key={m.type}>{m.reason}</li>)}
-              <li>Nooit goedkoper maar slechter</li>
-              <li className="text-kbc-muted">{insight.explanationSource === "claude" ? "Tekst door AI (Claude)" : "Automatische tekst"}</li>
+              <li>Never cheaper but worse</li>
+              <li className="text-kbc-muted">{insight.explanationSource === "claude" ? "Text written by AI (Claude)" : "Automatically generated text"}</li>
             </ul>
           </div>
         )}
@@ -135,10 +135,10 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
           <div className="mt-5 rounded-card bg-white p-4 text-center text-[14px] font-bold text-kbc-muted shadow-card">
             {insight.status === "accepted" ? (
               <>
-                <span className="block text-kbc-green">{insight.kind === "overlap" ? "✓ Gepauzeerd" : insight.kind === "purchase" ? `✓ Bekeken bij ${a?.provider ?? ""}` : "✓ Overstap aangevraagd"}</span>
-                <span className="mt-0.5 block text-[12px] font-bold text-kbc-muted">Telt mee bij Al bespaard</span>
+                <span className="block text-kbc-green">{insight.kind === "overlap" ? "✓ Paused" : insight.kind === "purchase" ? `✓ Viewed at ${a?.provider ?? ""}` : "✓ Switch requested"}</span>
+                <span className="mt-0.5 block text-[12px] font-bold text-kbc-muted">Counts towards Already saved</span>
               </>
-            ) : insight.status === "snoozed" ? "Herinnering over 30 dagen" : "Verborgen"}
+            ) : insight.status === "snoozed" ? "Reminder in 30 days" : "Hidden"}
           </div>
         ) : (
           <div className="mt-5 flex flex-col gap-2">
@@ -147,7 +147,7 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
             </button>
             <div className="flex gap-2">
               <button disabled={busy} onClick={() => onFeedback("snooze")} className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-white px-3 text-[14px] font-bold text-kbc-navy shadow-card disabled:opacity-60"><Clock size={16} className="shrink-0" /> Later</button>
-              <button disabled={busy} onClick={() => onFeedback("dismiss")} className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-white px-3 text-[14px] font-bold text-kbc-navy shadow-card disabled:opacity-60"><ThumbsDown size={16} className="shrink-0" /> <span className="truncate">Niet interessant</span></button>
+              <button disabled={busy} onClick={() => onFeedback("dismiss")} className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-white px-3 text-[14px] font-bold text-kbc-navy shadow-card disabled:opacity-60"><ThumbsDown size={16} className="shrink-0" /> <span className="truncate">Not interested</span></button>
             </div>
           </div>
         )}

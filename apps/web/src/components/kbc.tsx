@@ -19,16 +19,16 @@ export function KbcHeader({ onSettings, onBell, badge }: { onSettings: () => voi
   const nav = useNav();
   return (
     <div className="flex items-center gap-3 px-4 pt-2">
-      <button onClick={onSettings} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white shadow-card" aria-label="Instellingen">
+      <button onClick={onSettings} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white shadow-card" aria-label="Settings">
         <Settings size={22} className="text-kbc-text" />
       </button>
       <button onClick={() => nav.demo("Kate")} className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-full border border-[#dbe5ef] bg-white px-4 text-kbc-muted">
         <Search size={18} />
-        <span className="flex-1 truncate text-[15px]">Hoe kan ik je helpen?</span>
+        <span className="flex-1 truncate text-[15px]">How can I help you?</span>
         <KateMark size={16} />
         <span className="text-[15px] font-extrabold text-kbc-navy">Kate</span>
       </button>
-      <button onClick={onBell} className="relative grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white shadow-card" aria-label="Meldingen">
+      <button onClick={onBell} className="relative grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white shadow-card" aria-label="Notifications">
         <Bell size={22} className="text-kbc-text" />
         {badge && <span className="absolute right-2.5 top-2.5 h-3 w-3 rounded-full bg-kbc-red ring-2 ring-white" />}
       </button>
@@ -41,7 +41,7 @@ export function Chips() {
   const chip = "flex h-11 items-center gap-2 rounded-full bg-white px-4 text-[15px] font-bold text-kbc-navy shadow-card whitespace-nowrap";
   return (
     <div className="no-scrollbar flex gap-2.5 overflow-x-auto px-4 pt-4">
-      <button onClick={nav.home} aria-label="Rekeningen" className="grid h-11 w-14 shrink-0 place-items-center rounded-full bg-kbc-navy text-white"><Wallet size={20} /></button>
+      <button onClick={nav.home} aria-label="Accounts" className="grid h-11 w-14 shrink-0 place-items-center rounded-full bg-kbc-navy text-white"><Wallet size={20} /></button>
       <button onClick={() => nav.demo("MyNWS")} className={chip}><Newspaper size={18} />MyNWS</button>
       <button onClick={() => nav.demo("MyHome")} className={chip}><Home size={18} />MyHome</button>
       <button onClick={() => nav.demo("MyMobility")} className={chip}><Route size={18} />MyMobility</button>
@@ -71,14 +71,14 @@ export function AccountCards({ name }: { name: string }) {
   return (
     <div className="no-scrollbar flex gap-3 overflow-x-auto pr-4 pt-4">
       <button onClick={() => nav.demo("Kate Coins")} className="flex h-[210px] w-[46px] shrink-0 flex-col items-center justify-between rounded-r-[20px] bg-gradient-to-b from-kbc-sky to-kbc-navy py-3 text-white">
-        <span className="rotate-180 text-[13px] font-bold [writing-mode:vertical-rl]">3,00 KTC</span>
+        <span className="rotate-180 text-[13px] font-bold [writing-mode:vertical-rl]">3.00 KTC</span>
         <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white text-[11px] font-black text-kbc-blue">K</span>
       </button>
-      <AccountCard name={name} balance="2 348,12 EUR" />
-      <AccountCard name="Spaarrekening" balance="7 415,60 EUR" dark />
+      <AccountCard name={name} balance="€2,348.12" />
+      <AccountCard name="Savings account" balance="€7,415.60" dark />
       <div className="flex shrink-0 flex-col gap-3">
-        <button onClick={() => nav.demo("Favorieten wijzigen")} className="flex h-[99px] w-[110px] items-center gap-2 rounded-l-[20px] bg-white px-4 text-[15px] font-bold text-kbc-navy shadow-card"><Star size={20} />Wijzig</button>
-        <button onClick={() => nav.demo("Nieuwe rekening")} className="flex h-[99px] w-[110px] items-center gap-2 rounded-l-[20px] bg-white px-4 text-[15px] font-bold text-kbc-navy shadow-card"><PlusCircle size={20} className="text-kbc-green" />Nieuw</button>
+        <button onClick={() => nav.demo("Edit favourites")} className="flex h-[99px] w-[110px] items-center gap-2 rounded-l-[20px] bg-white px-4 text-[15px] font-bold text-kbc-navy shadow-card"><Star size={20} />Edit</button>
+        <button onClick={() => nav.demo("New account")} className="flex h-[99px] w-[110px] items-center gap-2 rounded-l-[20px] bg-white px-4 text-[15px] font-bold text-kbc-navy shadow-card"><PlusCircle size={20} className="text-kbc-green" />New</button>
       </div>
     </div>
   );
@@ -95,7 +95,7 @@ export function ShowPayments() {
   return (
     <>
       <button onClick={toggle} className="mt-4 flex items-center gap-4 px-6 text-[15px] font-bold text-kbc-blue">
-        <ChevronDown size={20} className={`transition ${open ? "rotate-180" : ""}`} /> {open ? "Verberg betalingen" : "Toon betalingen"}
+        <ChevronDown size={20} className={`transition ${open ? "rotate-180" : ""}`} /> {open ? "Hide payments" : "Show payments"}
       </button>
       {open && (
         <div className="mx-4 mt-2 overflow-hidden rounded-card bg-white shadow-card">
@@ -108,7 +108,7 @@ export function ShowPayments() {
               <span className={`shrink-0 text-[14px] font-bold ${t.amount > 0 ? "text-kbc-green" : "text-kbc-text"}`}>{t.amount > 0 ? "+" : "-"}{eur(Math.abs(t.amount), 2)}</span>
             </div>
           ))}
-          {txs === null && <div className="px-4 py-3 text-[13px] text-kbc-muted">Laden…</div>}
+          {txs === null && <div className="px-4 py-3 text-[13px] text-kbc-muted">Loading…</div>}
         </div>
       )}
     </>
@@ -121,7 +121,7 @@ export function ForYouCard({ icon, children, onClick, onDismiss, kate, label = "
     <button onClick={onClick} className={`relative flex w-full gap-4 rounded-card bg-white p-4 pr-10 text-left shadow-card ${highlight ? "ring-2 ring-kbc-sky" : ""}`}>
       <span className="relative mt-1 shrink-0 self-start text-kbc-navy">
         {icon}
-        <span className="absolute -right-1 -top-1 h-3 w-3 shrink-0 rounded-full bg-kbc-red ring-2 ring-white" aria-label="Nieuw" />
+        <span className="absolute -right-1 -top-1 h-3 w-3 shrink-0 rounded-full bg-kbc-red ring-2 ring-white" aria-label="New" />
       </span>
       <span className="min-w-0 flex-1 text-[15px] leading-snug text-kbc-text">
         {kate && (
@@ -131,7 +131,7 @@ export function ForYouCard({ icon, children, onClick, onDismiss, kate, label = "
       </span>
     </button>
       {onDismiss && (
-        <button onClick={onDismiss} aria-label="Verbergen" className="absolute right-3 top-3 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-kbc-bg text-kbc-muted"><X size={12} /></button>
+        <button onClick={onDismiss} aria-label="Hide" className="absolute right-3 top-3 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-kbc-bg text-kbc-muted"><X size={12} /></button>
       )}
     </div>
   );
@@ -141,21 +141,21 @@ export function BottomNav({ active = "start", fab = true }: { active?: string; o
   const nav = useNav();
   const go: Record<string, () => void> = {
     start: nav.home,
-    mijn: () => nav.demo("Mijn KBC"),
+    mijn: () => nav.demo("My KBC"),
     beleggen: nav.invest,
-    zakelijk: () => nav.demo("Zakelijk"),
-    aanbod: () => nav.demo("Aanbod"),
+    zakelijk: () => nav.demo("Business"),
+    aanbod: () => nav.demo("Offers"),
   };
   const items = [
-    { id: "start", label: "Start", icon: Wallet },
-    { id: "mijn", label: "Mijn KBC", icon: List },
-    { id: "beleggen", label: "Beleggen", icon: PiggyBank },
-    { id: "zakelijk", label: "Zakelijk", icon: Briefcase },
-    { id: "aanbod", label: "Aanbod", icon: Layers },
+    { id: "start", label: "Home", icon: Wallet },
+    { id: "mijn", label: "My KBC", icon: List },
+    { id: "beleggen", label: "Invest", icon: PiggyBank },
+    { id: "zakelijk", label: "Business", icon: Briefcase },
+    { id: "aanbod", label: "Offers", icon: Layers },
   ];
   return (
     <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-kbc-bg from-40% to-transparent px-3 pb-3 pt-4">
-      {fab && <button onClick={() => nav.demo("Overschrijven")} aria-label="Overschrijven" className="absolute -top-12 right-5 grid h-16 w-16 shrink-0 place-items-center rounded-full bg-kbc-blue text-white shadow-[0_8px_20px_rgba(0,121,193,0.4)]"><ArrowLeftRight size={26} /></button>}
+      {fab && <button onClick={() => nav.demo("Transfer")} aria-label="Transfer" className="absolute -top-12 right-5 grid h-16 w-16 shrink-0 place-items-center rounded-full bg-kbc-blue text-white shadow-[0_8px_20px_rgba(0,121,193,0.4)]"><ArrowLeftRight size={26} /></button>}
       <div className="flex items-center justify-between rounded-[28px] bg-white px-2 py-2 shadow-[0_-4px_24px_rgba(10,46,92,0.12)]">
         {items.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={go[id]} className={`flex w-[68px] flex-col items-center gap-1 rounded-[22px] py-2 text-[12px] font-bold ${active === id ? "bg-kbc-bg text-kbc-navy" : "text-kbc-text"}`}>

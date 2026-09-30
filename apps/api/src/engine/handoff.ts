@@ -30,10 +30,10 @@ export const HANDOFF_TTL_MS = 10 * 60_000;
 const handoffs = new Map<string, Handoff>();
 
 const CURRENT_LABEL: Record<string, string> = {
-  energy: "Huidige leverancier",
-  telecom: "Huidige operator",
-  mobile: "Huidige operator",
-  insurance: "Huidige verzekeraar",
+  energy: "Current supplier",
+  telecom: "Current operator",
+  mobile: "Current operator",
+  insurance: "Current insurer",
 };
 
 /**
@@ -48,33 +48,33 @@ export function previewHandoff(customer: Customer, insight: Insight): HandoffPre
   const f = (key: string, label: string, value: string | number | undefined, required = true): HandoffField | null =>
     value === undefined || value === "" ? null : { key, label, value: String(value), required };
   const base = [
-    f("name", "Naam", customer.name.split(" ").reverse().join(" ")),
+    f("name", "Name", customer.name.split(" ").reverse().join(" ")),
     f("email", "E-mail", p.email),
-    f("phone", "Gsm", p.phone, false),
-    f("address", "Adres", `${p.street}, ${p.postcode} ${p.city}`),
+    f("phone", "Mobile", p.phone, false),
+    f("address", "Address", `${p.street}, ${p.postcode} ${p.city}`),
   ];
   let extra: (HandoffField | null)[] = [];
-  let purpose = `Overstap naar ${a.provider}`;
+  let purpose = `Switch to ${a.provider}`;
   switch (insight.category) {
     case "energy":
-      extra = [f("ean", "EAN-code aansluiting", p.energyEan), f("current", CURRENT_LABEL.energy, insight.current.name), f("start", "Gewenste startdatum", "Zo snel mogelijk", false)];
+      extra = [f("ean", "EAN connection code", p.energyEan), f("current", CURRENT_LABEL.energy, insight.current.name), f("start", "Preferred start date", "As soon as possible", false)];
       break;
     case "telecom":
       extra = [f("easyswitch", "Easy Switch-ID", p.easySwitchId), f("current", CURRENT_LABEL.telecom, insight.current.name)];
       break;
     case "mobile":
-      extra = [f("number", "Nummer overzetten", p.phone), f("current", CURRENT_LABEL.mobile, insight.current.name)];
+      extra = [f("number", "Number to transfer", p.phone), f("current", CURRENT_LABEL.mobile, insight.current.name)];
       break;
     case "insurance":
-      extra = [f("birth", "Geboortedatum", p.birthDate), f("plate", "Nummerplaat", p.licensePlate), f("bonusmalus", "Bonus-malus", p.bonusMalus), f("current", CURRENT_LABEL.insurance, insight.current.name)];
+      extra = [f("birth", "Date of birth", p.birthDate), f("plate", "Licence plate", p.licensePlate), f("bonusmalus", "Bonus-malus", p.bonusMalus), f("current", CURRENT_LABEL.insurance, insight.current.name)];
       break;
     case "electronics":
-      purpose = `Bestelling bij ${a.provider}`;
+      purpose = `Order at ${a.provider}`;
       extra = [f("product", "Product", insight.product)];
       break;
     case "groceries":
     case "fuel":
-      purpose = `Klantenkaart bij ${a.provider}`;
+      purpose = `Loyalty card at ${a.provider}`;
       return { provider: a.provider, purpose, fields: [base[0], base[1], f("postcode", "Postcode", p.postcode)].filter((x): x is HandoffField => x !== null) };
     default:
       return null;
