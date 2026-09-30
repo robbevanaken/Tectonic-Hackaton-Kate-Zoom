@@ -24,7 +24,7 @@ export function HomeScreen({ name, off, top, onOpenSwitch, onOpenInsight, onSett
         </div>
         <div className="mt-3 flex flex-col gap-3 px-4">
           {top ? (
-            <ForYouCard kate label="Kate Zoom" highlight icon={<KateMark size={30} />} onClick={() => onOpenInsight(top)}>
+            <ForYouCard kate label="Kate Zoom" highlight icon={<KateMark size={30} />} onClick={onOpenSwitch}>
               <b>Bespaar {eur(top.savingsYear)} {periodLabel(top.period)}</b>
               <span className="block">{top.whyNow}</span>
             </ForYouCard>
