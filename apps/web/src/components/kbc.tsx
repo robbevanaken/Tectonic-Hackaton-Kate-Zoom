@@ -119,8 +119,10 @@ export function ForYouCard({ icon, children, onClick, onDismiss, kate, label = "
   return (
     <div className="relative">
     <button onClick={onClick} className={`relative flex w-full gap-4 rounded-card bg-white p-4 pr-10 text-left shadow-card ${highlight ? "ring-2 ring-kbc-sky" : ""}`}>
-      <span className="absolute -left-1 top-3 h-2.5 w-2.5 rounded-full bg-kbc-red" />
-      <span className="mt-1 shrink-0 text-kbc-navy">{icon}</span>
+      <span className="relative mt-1 shrink-0 self-start text-kbc-navy">
+        {icon}
+        <span className="absolute -right-1 -top-1 h-3 w-3 shrink-0 rounded-full bg-kbc-red ring-2 ring-white" aria-label="Nieuw" />
+      </span>
       <span className="min-w-0 flex-1 text-[15px] leading-snug text-kbc-text">
         {kate && (
           <span className="mb-1 flex items-center gap-1.5 font-extrabold text-kbc-navy"><KateMark size={16} />{label}</span>
