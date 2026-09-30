@@ -10,7 +10,7 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "framer-motion": "^12.4.7",
+    "framer-motion": "^13.4.2",
     "lucide-react": "^0.475.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
