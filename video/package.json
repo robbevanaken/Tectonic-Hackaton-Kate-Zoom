@@ -1,0 +1,32 @@
+{
+  "name": "kate-zoom-video",
+  "private": true,
+  "type": "module",
+  "description": "Demo/ad video for Kate Zoom: Playwright app recordings + Veo/TTS/Lyria assets, edited in Remotion.",
+  "scripts": {
+    "record": "tsx scripts/record.ts",
+    "gen:tts": "tsx scripts/gen-tts.ts",
+    "gen:music": "tsx scripts/gen-music.ts",
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts KateZoomAd out/kate-zoom.mp4 && tsx scripts/master.ts out/kate-zoom.mp4",
+    "render:cuts": "for c in Energie Verzekering Boodschappen Streaming; do remotion render src/index.ts Cut-$c out/cut-$c.mp4 && tsx scripts/master.ts out/cut-$c.mp4; done",
+    "gen:video": "tsx scripts/gen-video.ts",
+    "facts": "tsx scripts/facts.ts"
+  },
+  "dependencies": {
+    "@remotion/cli": "^4.0.531",
+    "@remotion/google-fonts": "^4.0.531",
+    "@remotion/media-utils": "^4.0.531",
+    "lucide-react": "^1.49.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.531"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "@types/react": "^18.3.31",
+    "playwright": "^1.63.0",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

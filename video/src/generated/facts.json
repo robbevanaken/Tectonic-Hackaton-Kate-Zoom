@@ -1,0 +1,120 @@
+{
+  "energie": {
+    "id": "engie-o-bolt",
+    "title": "Engie → Bolt Energie",
+    "current": {
+      "name": "Engie",
+      "monthly": 168,
+      "quality": 4.1
+    },
+    "alternative": {
+      "offerId": "o-bolt",
+      "provider": "Bolt Energie",
+      "monthly": 129,
+      "quality": 4.3,
+      "source": "Test Aankoop 09/2026",
+      "partner": false,
+      "partnerDeal": "KBC customer deal: €50 welcome discount on your first bill",
+      "note": "100% Belgian green electricity, variable rate",
+      "switchEffort": "low"
+    },
+    "savingsYear": 468,
+    "savingsMonth": 39
+  },
+  "verzekering": {
+    "id": "ag-o-kbc-auto",
+    "title": "AG Insurance (auto) → KBC Autoverzekering",
+    "current": {
+      "name": "AG Insurance (auto)",
+      "monthly": 62,
+      "quality": 4.2
+    },
+    "alternative": {
+      "offerId": "o-kbc-auto",
+      "provider": "KBC Autoverzekering",
+      "monthly": 54,
+      "quality": 4.4,
+      "source": "Test Aankoop 06/2026",
+      "partner": true,
+      "note": "Same cover (liability + comprehensive), bonus-malus carried over",
+      "switchEffort": "low"
+    },
+    "savingsYear": 96,
+    "savingsMonth": 8
+  },
+  "boodschappen": {
+    "id": "delhaize-o-colruyt",
+    "title": "Delhaize → Colruyt",
+    "current": {
+      "name": "Delhaize",
+      "monthly": 500.43,
+      "quality": 4.3
+    },
+    "alternative": {
+      "offerId": "o-colruyt",
+      "provider": "Colruyt",
+      "monthly": 455.39,
+      "quality": 4.2,
+      "source": "Test Aankoop supermarket index 2026",
+      "partner": false,
+      "note": "Same brands, lowest-price guarantee",
+      "switchEffort": "low"
+    },
+    "savingsYear": 540,
+    "savingsMonth": 45.04
+  },
+  "sony": {
+    "id": "purchase-4548736000017-p-coolblue-xm5",
+    "title": "Sony WH-1000XM5 headphones",
+    "current": {
+      "name": "MediaMarkt",
+      "monthly": 399,
+      "quality": 4.1
+    },
+    "alternative": {
+      "offerId": "p-coolblue-xm5",
+      "provider": "Coolblue",
+      "monthly": 329,
+      "quality": 4.6,
+      "source": "Price comparison 30/09/2026",
+      "partner": false,
+      "partnerDeal": "KBC customer deal: 2 years extra warranty",
+      "note": "Same model and colour, delivered tomorrow, 30-day return period",
+      "switchEffort": "low"
+    },
+    "savingsYear": 70,
+    "savingsMonth": 0
+  },
+  "streaming": {
+    "id": "overlap-streaming",
+    "title": "3 streaming services",
+    "current": {
+      "name": "Netflix, Streamz, Disney+",
+      "monthly": 36.97,
+      "quality": 0
+    },
+    "alternative": null,
+    "savingsYear": 120,
+    "savingsMonth": 9.99
+  },
+  "total": 1715,
+  "beleggen": {
+    "platform": "bolero",
+    "option": "world",
+    "lump": 131,
+    "monthly": 53,
+    "years": 20,
+    "realized": 131,
+    "yearly": 636,
+    "value": 28138,
+    "invested": 12851,
+    "optionLabel": "World ETF",
+    "expectedReturn": 0.07
+  },
+  "streamingKeep": {
+    "keep": "Netflix",
+    "keepMonthly": 13.99,
+    "pausedYear": 276
+  },
+  "tests": 22
+}
