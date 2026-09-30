@@ -48,6 +48,7 @@ export function HandoffConsent({ insight, onBack, onGo }: { insight: Insight; on
           <KateMark size={40} className="shrink-0" />
           <div className="min-w-0">
             <h1 className="break-words text-[21px] font-extrabold leading-tight text-kbc-navy">Delen met {preview?.provider ?? insight.alternative?.provider}</h1>
+            {preview && <p className="text-[13px] font-bold text-kbc-muted">{preview.purpose}</p>}
           </div>
         </div>
 

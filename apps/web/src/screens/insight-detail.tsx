@@ -133,7 +133,12 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
 
         {done ? (
           <div className="mt-5 rounded-card bg-white p-4 text-center text-[14px] font-bold text-kbc-muted shadow-card">
-            {insight.status === "accepted" ? "✓ Aangevraagd" : insight.status === "snoozed" ? "Herinnering over 30 dagen" : "Verborgen"}
+            {insight.status === "accepted" ? (
+              <>
+                <span className="block text-kbc-green">{insight.kind === "overlap" ? "✓ Gepauzeerd" : insight.kind === "purchase" ? `✓ Bekeken bij ${a?.provider ?? ""}` : "✓ Overstap aangevraagd"}</span>
+                <span className="mt-0.5 block text-[12px] font-bold text-kbc-muted">Telt mee bij Al bespaard</span>
+              </>
+            ) : insight.status === "snoozed" ? "Herinnering over 30 dagen" : "Verborgen"}
           </div>
         ) : (
           <div className="mt-5 flex flex-col gap-2">

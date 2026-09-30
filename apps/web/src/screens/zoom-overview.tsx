@@ -18,13 +18,14 @@ export function ZoomOverview({ firstName, insights, spending, savings, onBack, o
       <div className="flex items-center gap-2 px-4 pt-2">
         <button onClick={onBack} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white shadow-card" aria-label="Terug"><ChevronLeft size={22} /></button>
         <h1 className="flex flex-1 items-center gap-2 text-[20px] font-extrabold text-kbc-navy"><KateMark size={22} /> Kate Zoom</h1>
-        <button onClick={onSettings} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-kbc-muted shadow-card" aria-label="Info"><Info size={20} /></button>
+        <button onClick={onSettings} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-kbc-muted shadow-card" aria-label="Hoe werkt Kate Zoom?"><Info size={20} /></button>
       </div>
 
       <div className="no-scrollbar flex-1 overflow-y-auto px-4 pb-28 pt-4">
         <div className="rounded-card bg-gradient-to-br from-[#1F4B84] to-kbc-navy p-5 text-white shadow-card">
           <div className="text-[14px] font-bold opacity-80">{firstName}, je kan besparen</div>
           <div className="mt-1 text-[40px] font-extrabold leading-none">{eur(total)}</div>
+          <div className="mt-2 text-[13px] opacity-80">{active.length} {active.length === 1 ? "tip" : "tips"} · zelfde kwaliteit</div>
         </div>
 
         {savings && savings.realized > 0 && (

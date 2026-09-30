@@ -10,13 +10,15 @@ Every KBC customer already tells the bank, month after month, where their money 
 3. **Switch in one tap** — Kate prefills the provider's sign-up page with exactly the fields the customer approves, via a single-use 10-minute link. The provider never sees balances or spending.
 4. **Grow it** — everything Kate Zoom saved is tracked and can be invested, managed by KBC per risk profile or self-directed in ETFs via Bolero, with a live projection of what it grows to.
 
+**Why build it into Kate?** KBC customers already know and trust Kate as their assistant in the app. Advice about money only works when people trust who gives it, so Kate Zoom builds on that existing relationship instead of introducing a new app or brand.
+
 Partners can offer exclusive **KBC-klantendeals**, shown transparently but excluded from the ranking, so the comparison stays on price and quality.
 
 | | | |
 |---|---|---|
 | ![Push at the right moment](docs/screenshots/01-home-push.jpg) | ![Kate Zoom overview](docs/screenshots/02-overview.jpg) | ![Energy tip](docs/screenshots/03-energy-tip.jpg) |
 | ![Choose what to share](docs/screenshots/04-share-consent.jpg) | ![Provider page, prefilled](docs/screenshots/05-provider-prefilled.jpg) | ![Pause streaming services](docs/screenshots/06-streaming-tip.jpg) |
-| ![Same product, cheaper, still returnable](docs/screenshots/07-purchase-tip.jpg) | ![Invest the savings via KBC or Bolero](docs/screenshots/08-invest-bolero.jpg) | ![Consent, data export, organic timing](docs/screenshots/09-settings-organic-timing.jpg) |
+| ![Same product, cheaper, still returnable](docs/screenshots/07-purchase-tip.jpg) | ![Invest the savings via KBC or Bolero](docs/screenshots/08-invest-bolero.jpg) | ![What Kate Zoom is, in one screen](docs/screenshots/09-about.jpg) |
 
 ## Run it
 
@@ -74,7 +76,7 @@ REST API (`apps/api/src/routes/`), all `/api/me` routes scoped to the bearer tok
 | `POST /api/handoff/redeem` | Provider side: redeem the token once (410 when used or expired) |
 | `GET /api/me/savings` · `POST /api/me/invest/projection` · `POST /api/me/invest` | Savings ledger, projection, start plan (capped at what Kate actually saved) |
 
-`apps/web/` — React + Tailwind mock of the KBC Mobile app (Kate search bar, account cards, "Voor jou" feed, bottom nav) with the Kate Zoom module: push, overview, detail, consent, simulated provider page, invest. Every button works; parts of the KBC app outside this demo open a page that says so and links back to Kate Zoom.
+`apps/web/` — React + Tailwind mock of the KBC Mobile app (Kate search bar, account cards, "Voor jou" feed, bottom nav) with the Kate Zoom module: push, overview, detail, consent, simulated provider page, invest. Every button works; parts of the KBC app outside this demo open a page that says so and links back to Kate Zoom. The app shows only what a customer would see: the presenter controls (customer, date, reset, the live notification decision) sit in a separate panel next to the phone, or below it on a narrow screen with `?demo` in the URL.
 
 ## Business model
 

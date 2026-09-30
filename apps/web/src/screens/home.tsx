@@ -29,7 +29,7 @@ export function HomeScreen({ name, off, top, onOpenSwitch, onOpenInsight, onSett
               <span className="block">{top.whyNow}</span>
             </ForYouCard>
           ) : (
-            <ForYouCard kate label="Kate Zoom" highlight={!off} icon={<KateMark size={30} />} onClick={off ? onSettings : onOpenSwitch}>
+            <ForYouCard kate label="Kate Zoom" highlight={!off} icon={<KateMark size={30} />} onClick={onOpenSwitch}>
               {off ? "Kate Zoom staat uit. Zet aan om te besparen." : "Je vaste kosten zitten goed. Ik hou ze in het oog."}
             </ForYouCard>
           )}

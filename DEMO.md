@@ -16,7 +16,8 @@ npm run dev        # API op :4000, app op http://localhost:5180
 ```
 
 1. Open **http://localhost:5180** in Chrome. Op een laptop zie je de app in een telefoonframe.
-2. Tandwiel links boven → *Demo* → **Thomas**, dan **Reset feedback & meldingen**. Demodatum staat dan op 30 sep.
+2. Naast de telefoon staat de **Demo-bediening** (grijs kader, geen deel van de app). Kies **Thomas** en klik **Reset demo**.
+   De datum staat dan op 30 sep. Op een smal scherm staat de bediening onder de telefoon als je `?demo` achter de URL zet.
 3. Terug naar het startscherm: na ±1 seconde komt de push binnen. Lukt dat niet: stap 2 opnieuw.
 4. Meldingen op je laptop uit, browser op 100%.
 
@@ -45,9 +46,9 @@ npm run dev        # API op :4000, app op http://localhost:5180
 | 1:40 | Terug → tik op **Beleggen** bij *Al bespaard*. | "€131 al bespaard, en door de overstap van daarnet €636 per jaar." |
 | 1:50 | Kies **Bolero** → **Wereld-ETF** → **20 jaar**. | "Beleg het: beheerd door KBC of zelf via Bolero. Na 20 jaar wordt dat zoveel." (lees het groene bedrag voor) |
 | 2:05 | **Start beleggingsplan via Bolero**. | "Besparen wordt beleggen, en het geld blijft in de KBC-groep." |
-| 2:10 | Tandwiel → *Demodatum* **10 sep**. Terug naar start. | "Midden in de maand. Kate heeft dezelfde tips, maar zwijgt. Geen push." |
-| 2:25 | Tandwiel → *Demo* → **Lien**. | "Lien zit al goed: geen push, en Kate zegt gewoon 'hier zit je goed'." |
-| 2:40 | Tandwiel → toggle **Kate Zoom** uit. | "En één tik om alles uit te zetten. Dan wist Kate haar gegevens." |
+| 2:10 | Demo-bediening → datum **10 sep**. | "Midden in de maand. Kate heeft dezelfde tips, maar zwijgt. Geen push." |
+| 2:25 | Demo-bediening → **Lien**. | "Lien zit al goed: geen push, en Kate zegt gewoon 'hier zit je goed'." |
+| 2:40 | In de app: tandwiel → toggle **Kate Zoom** uit, terug, tik de Kate Zoom-kaart. | "Eén tik om alles uit te zetten, en Kate wist haar gegevens. Wie Kate Zoom nog niet kent, krijgt dit scherm: wat het is, in vier stappen." |
 | 2:50 | Afsluiten. | "Kate Zoom. No stress, Kate it." |
 
 ---
@@ -61,6 +62,7 @@ De keuzes die Kate Zoom onderscheiden, en waar je ze in de demo ziet.
 
 | Beslissing | Waarom | Waar zie je het |
 |---|---|---|
+| **Gebouwd in Kate.** Geen nieuwe app of merk, maar een uitbreiding van Kate. | KBC-klanten kennen en vertrouwen Kate al. Advies over geld werkt pas als je de afzender vertrouwt. | Kate Zoom-kaart op de startpagina, Kate's stem in elke tip |
 | **Organische meldingen.** Zachte tips (prijs stijgt, seizoen, dubbele abonnementen) wachten tot de laatste 5 dagen vóór *jouw* loon. Kate haalt de loondag uit je eigen loonstortingen. | Eind van de maand is het budget krap: dan is een besparing het meest welkom en het minst storend. | Push "Morgen komt je loon" · demodatum 10 vs 30 sep |
 | **Dringende tips gaan meteen.** Contract loopt af, net afgeschreven, retour nog mogelijk. | Die kans is weg als je wacht. | 15 sep: Telenet-melding |
 | **Geen moment, geen melding.** Max. 1 per week, pas vanaf €50. | Een melding moet welkom zijn, anders zet de klant ze uit. | Lien krijgt niets |
@@ -104,6 +106,9 @@ Kort te vertellen, details in [SECURITY.md](SECURITY.md) en [docs/LEGAL.md](docs
 
 ## 8. Knoppen buiten de demo
 
+De app toont enkel wat een klant zou zien. Alles om de demo te sturen (klant, datum, reset, de meldingsbeslissing)
+staat in de **Demo-bediening** naast de telefoon.
+
 Alle knoppen werken. Pagina's die niet bij Kate Zoom horen (MyHome, Mijn KBC, Overschrijven, rekeningen…) tonen
 "Deze pagina bestaat voor demo-doeleinden" met een knop terug naar Kate Zoom. *Beleggen* in de onderste balk opent
 het beleg-scherm van Kate Zoom, het belletje opent het Kate Zoom-overzicht.
@@ -112,9 +117,9 @@ het beleg-scherm van Kate Zoom, het belletje opent het Kate Zoom-overzicht.
 
 | Probleem | Oplossing |
 |---|---|
-| Je ziet maar één tip (€ 60, gsm) | Je staat op persona **Lien** (zit al goed). Tandwiel → *Demo* → **Thomas**. |
-| Geen pushmelding | Tandwiel → *Reset feedback & meldingen*, terug naar start. Check dat de demodatum op 30 sep staat. |
+| Je ziet maar één tip (€ 60, gsm) | Je staat op klant **Lien** (zit al goed). Demo-bediening → **Thomas**. |
+| Geen pushmelding | Demo-bediening → **Reset demo**. Check dat de datum op 30 sep staat. |
 | Rode balk "API niet bereikbaar" | `npm run dev` herstarten. |
 | "Link niet meer geldig" | Dat is de beveiliging (eenmalige link). Terug en opnieuw via *Overstappen naar*. Gerust tonen bij het security-verhaal. |
-| Tip staat al op "Aangevraagd" | Reset (zie hierboven). |
-| Kate Zoom staat uit | Toggle terug aan, dan Reset (uitzetten wist de gegevens, ook in de demo). |
+| Tip staat al op "✓ Overstap aangevraagd" | Demo-bediening → **Reset demo**. |
+| Kate Zoom staat uit | Demo-bediening → **Reset demo** (uitzetten wist de gegevens, ook in de demo). |

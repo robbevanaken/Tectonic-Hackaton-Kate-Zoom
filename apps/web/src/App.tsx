@@ -9,6 +9,8 @@ import { HandoffConsent } from "@/screens/handoff-consent";
 import { ProviderPage } from "@/screens/provider-page";
 import { InvestScreen } from "@/screens/invest";
 import { PlaceholderScreen } from "@/screens/placeholder";
+import { AboutScreen } from "@/screens/about";
+import { DemoPanel } from "@/components/demo-panel";
 import { NavContext, type Nav } from "@/lib/nav";
 import { api, ApiError, getPersona, setPersona, PERSONAS, type Insight, type Me, type Savings, type Spending } from "@/lib/api";
 
@@ -19,6 +21,7 @@ type Screen =
   | { name: "handoff"; id: string }
   | { name: "provider"; id: string; token: string }
   | { name: "invest" }
+  | { name: "about" }
   | { name: "placeholder"; title: string; from: Screen }
   | { name: "settings" };
 
@@ -129,10 +132,13 @@ export default function App() {
   };
 
   const top = insights.find((i) => i.status === "new") ?? null;
+  // With Kate Zoom off, every entry point explains what it is instead of showing an empty list.
+  const openZoom = () => setScreen(me && !me.consent ? { name: "about" } : { name: "switch" });
   const current = "id" in screen ? insights.find((i) => i.id === screen.id) ?? null : null;
 
   return (
     <NavContext.Provider value={nav}>
+    <div className="flex min-h-full flex-col items-center justify-center lg:flex-row lg:gap-10">
     <PhoneFrame>
       {error && <div className="absolute inset-x-4 top-14 z-50 rounded-card bg-kbc-red px-4 py-3 text-[13px] font-bold text-white">{error}</div>}
       <Push
@@ -142,10 +148,10 @@ export default function App() {
         onClose={closePush}
       />
       {screen.name === "home" && (
-        <HomeScreen name={me?.name ?? ""} off={me ? !me.consent : false} top={top} hasPush={!!push} onOpenSwitch={() => setScreen({ name: "switch" })} onOpenInsight={openInsight} onSettings={() => setScreen({ name: "settings" })} />
+        <HomeScreen name={me?.name ?? ""} off={me ? !me.consent : false} top={top} hasPush={!!push} onOpenSwitch={openZoom} onOpenInsight={openInsight} onSettings={() => setScreen({ name: "settings" })} />
       )}
       {screen.name === "switch" && (
-        <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} onInvest={() => setScreen({ name: "invest" })} />
+        <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "about" })} onInvest={() => setScreen({ name: "invest" })} />
       )}
       {screen.name === "insight" && current && (
         <InsightDetail insight={current} busy={busy} onBack={() => setScreen({ name: "switch" })} onFeedback={(a, paused) => feedback(current.id, a, paused)} onHandoff={() => setScreen({ name: "handoff", id: current.id })} />
@@ -164,17 +170,30 @@ export default function App() {
         />
       )}
       {(screen.name === "insight" || screen.name === "handoff") && !current && (
-        <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} onInvest={() => setScreen({ name: "invest" })} />
+        <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "about" })} onInvest={() => setScreen({ name: "invest" })} />
       )}
       {screen.name === "invest" && savings && (
         <InvestScreen savings={savings} onBack={() => setScreen({ name: "switch" })} onStarted={() => void load(false)} />
       )}
       {screen.name === "settings" && (
-        <SettingsScreen me={me} persona={persona} onPersona={changePersona} onConsent={consent} onReset={reset} onDemoDate={demoDate} onBack={() => setScreen({ name: "home" })} notificationReason={pushReason} />
+        <SettingsScreen me={me} onConsent={consent} onBack={() => setScreen({ name: "home" })} onAbout={() => setScreen({ name: "about" })} />
+      )}
+      {screen.name === "about" && (
+        <AboutScreen
+          on={me?.consent ?? false}
+          onBack={() => setScreen({ name: "home" })}
+          onTips={() => setScreen({ name: "switch" })}
+          onEnable={async () => {
+            await consent(true);
+            setScreen({ name: "switch" });
+          }}
+        />
       )}
       {screen.name === "placeholder" && <PlaceholderScreen title={screen.title} onBack={() => setScreen(screen.from)} onZoom={() => setScreen({ name: "switch" })} />}
       {screen.name === "invest" && !savings && <PlaceholderScreen title="Beleggen" onBack={() => setScreen({ name: "home" })} onZoom={() => setScreen({ name: "switch" })} />}
     </PhoneFrame>
+    <DemoPanel me={me} persona={persona} reason={pushReason} onPersona={changePersona} onDemoDate={demoDate} onReset={reset} />
+    </div>
     </NavContext.Provider>
   );
 }
