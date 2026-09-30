@@ -18,11 +18,12 @@ Partners can offer exclusive **KBC-klantendeals**, shown transparently but exclu
 
 | | | |
 |---|---|---|
-| ![Push at the right moment](docs/screenshots/framed/01-home-push.png) | ![Kate Zoom overview](docs/screenshots/framed/02-overview.png) | ![Energy tip](docs/screenshots/framed/03-energy-tip.png) |
-| ![Choose what to share](docs/screenshots/framed/04-share-consent.png) | ![Provider page, prefilled](docs/screenshots/framed/05-provider-prefilled.png) | ![Pause streaming services](docs/screenshots/framed/06-streaming-tip.png) |
-| ![Same product, cheaper, still returnable](docs/screenshots/framed/07-purchase-tip.png) | ![Invest the savings via KBC or Bolero](docs/screenshots/framed/08-invest-bolero.png) | ![What Kate Zoom is](docs/screenshots/framed/09-about.png) |
+| ![Push at the right moment](docs/screenshots/framed/01-home-push.png) | ![Kate Zoom overview](docs/screenshots/framed/02-overview.png) | ![Energy tip](docs/screenshots/framed/04-energy-tip.png) |
+| ![Why do I see this?](docs/screenshots/framed/05-why-this-tip.png) | ![Choose what to share](docs/screenshots/framed/06-share-consent.png) | ![Provider page, prefilled](docs/screenshots/framed/07-provider-prefilled.png) |
+| ![Switch requested](docs/screenshots/framed/09-switch-requested.png) | ![Pause streaming services](docs/screenshots/framed/11-streaming-tip.png) | ![Same product, cheaper, still returnable](docs/screenshots/framed/13-purchase-tip.png) |
+| ![Invest via Bolero](docs/screenshots/framed/15-invest-bolero.png) | ![Mid-month: no push](docs/screenshots/framed/18-mid-month-no-push.png) | ![Already good deals](docs/screenshots/framed/20-already-good-deals.png) |
 
-Full-resolution screens and a description of each are in [docs/screenshots](docs/screenshots/).
+All 22 screens, grouped by story, are in [docs/screenshots](docs/screenshots/).
 
 ## Run it
 
