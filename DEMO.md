@@ -10,7 +10,8 @@ Alle data is **fictief** (Thomas Janssens, Lien Vermeulen, voorbeeldadressen, `e
 ## 1. Voorbereiding (5 min vóór je begint)
 
 ```bash
-cd tectonic-hackaton
+git clone https://github.com/robbevanaken/Tectonic-Hackaton-Kate-Zoom.git
+cd Tectonic-Hackaton-Kate-Zoom
 npm install        # eenmalig
 npm run dev        # API op :4000, app op http://localhost:5180
 ```
