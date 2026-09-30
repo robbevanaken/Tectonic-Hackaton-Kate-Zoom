@@ -26,3 +26,18 @@ jobs:
       - run: npm test
       - run: npm run build
       - run: npm audit --audit-level=moderate
+
+  semgrep:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: SAST (Semgrep, fails on any finding)
+        run: >
+          pipx run semgrep==1.178.0 scan --metrics=off --error
+          --config p/javascript --config p/typescript --config p/react
+          --config p/nodejs --config p/expressjs --config p/owasp-top-ten
+          --config p/secrets --config p/gitleaks --config p/github-actions
+          --exclude node_modules --exclude dist .
