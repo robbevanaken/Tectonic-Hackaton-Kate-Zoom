@@ -212,3 +212,13 @@ test("auth: demo tokens work in dev, never in production", async () => {
     process.env.NODE_ENV = prev;
   }
 });
+
+test("streaming overlap: lists services; pausing a chosen set books that saving", async () => {
+  const { entryFromInsight } = await import("./savings.js");
+  const overlap = analyze(thomas, AS_OF).insights.find((i) => i.kind === "overlap")!;
+  assert.deepEqual(overlap.services!.map((s) => s.name), ["Netflix", "Streamz", "Disney+"]);
+  const e = entryFromInsight(overlap, AS_OF, ["Streamz", "Disney+"]);
+  assert.equal(e.amount, Math.round((12.99 + 9.99) * 12 * 100) / 100);
+  assert.match(e.label, /Streamz, Disney\+/);
+  assert.equal(entryFromInsight(overlap, AS_OF, ["Onbekend"]).amount, overlap.savingsYear, "unknown names fall back to the suggestion");
+});

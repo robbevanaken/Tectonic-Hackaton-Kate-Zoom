@@ -40,7 +40,8 @@ npm run dev        # API op :4000, app op http://localhost:5180
 | 0:45 | Tik **Overstappen naar Bolt Energie**. Vink **Gsm** uit. | "De klant ziet wat Kate deelt en kiest zelf. Geen saldo, geen uitgaven. De link werkt één keer, tien minuten." |
 | 1:00 | **Ga naar Bolt Energie** → voorwaarden aanvinken → **Aanvraag versturen** → **Terug naar KBC**. | "Alles is al ingevuld, zonder gsm-nummer. Van melding tot aanvraag in 30 seconden." |
 | 1:15 | Terug → **Alle communicatie** (Kate Zoom-overzicht). | "Alle tips op één plek, elk met zijn moment: contract loopt af, net afgeschreven." |
-| 1:25 | Tik op **Sony WH-1000XM5**. | "Ook fysieke aankopen. Negen dagen geleden gekocht voor €399, nu €329 bij Coolblue, en je kan nog retourneren." |
+| 1:20 | Tik op **3 streamingdiensten**, zet ook **Streamz** op *Pauzeren*. | "Netflix, Streamz én Disney+: €37 per maand. Pauzeer er twee die je weinig kijkt en je bespaart €276 per jaar. Later zet je ze gewoon weer aan." Tik terug. |
+| 1:30 | Tik op **Sony WH-1000XM5**. | "Ook fysieke aankopen. Negen dagen geleden gekocht voor €399, nu €329 bij Coolblue, en je kan nog retourneren." |
 | 1:40 | Terug → tik op **Beleggen** bij *Al bespaard*. | "€131 al bespaard, en door de overstap van daarnet €636 per jaar." |
 | 1:50 | Kies **Bolero** → **Wereld-ETF** → **20 jaar**. | "Beleg het: beheerd door KBC of zelf via Bolero. Na 20 jaar wordt dat zoveel." (lees het groene bedrag voor) |
 | 2:05 | **Start beleggingsplan via Bolero**. | "Besparen wordt beleggen, en het geld blijft in de KBC-groep." |
@@ -54,6 +55,9 @@ npm run dev        # API op :4000, app op http://localhost:5180
 ## 4. Beslissingen die we in de demo vertellen
 
 Dit zijn de keuzes die ons onderscheiden. Noem er minstens vier.
+
+> Toon in de demo dat Kate Zoom op **veel soorten uitgaven** bespaart. Thomas heeft 8 tips: energie, boodschappen,
+> internet, brandstof, gsm, streaming, autoverzekering en een fysieke aankoop.
 
 | Beslissing | Waarom | Waar zie je het |
 |---|---|---|
@@ -108,6 +112,7 @@ het beleg-scherm van Kate Zoom, het belletje opent het Kate Zoom-overzicht.
 
 | Probleem | Oplossing |
 |---|---|
+| Je ziet maar één tip (€ 60, gsm) | Je staat op persona **Lien** (zit al goed). Tandwiel → *Demo* → **Thomas**. |
 | Geen pushmelding | Tandwiel → *Reset feedback & meldingen*, terug naar start. Check dat de demodatum op 30 sep staat. |
 | Rode balk "API niet bereikbaar" | `npm run dev` herstarten. |
 | "Link niet meer geldig" | Dat is de beveiliging (eenmalige link). Terug en opnieuw via *Overstappen naar*. Gerust tonen bij het security-verhaal. |

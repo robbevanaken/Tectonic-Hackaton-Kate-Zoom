@@ -75,7 +75,12 @@ export function realizedToDate(entries: SavingEntry[], asOf: string): number {
 
 export const yearlyRunRate = (entries: SavingEntry[]) => round2(entries.filter((e) => e.period === "year").reduce((s, e) => s + e.amount, 0));
 
-export function entryFromInsight(i: Insight, asOf: string): SavingEntry {
+export function entryFromInsight(i: Insight, asOf: string, paused?: string[]): SavingEntry {
+  const chosen = i.kind === "overlap" && i.services && paused ? i.services.filter((s) => paused.includes(s.name)) : [];
+  if (chosen.length) {
+    const amount = Math.round(chosen.reduce((sum, s) => sum + s.monthly, 0) * 12 * 100) / 100;
+    return { id: i.id, date: asOf, label: `Gepauzeerd: ${chosen.map((s) => s.name).join(", ")}`, amount, period: "year" };
+  }
   return { id: i.id, date: asOf, label: i.alternative ? `${i.current.name} → ${i.alternative.provider}` : i.title, amount: i.savingsYear, period: i.period };
 }
 

@@ -22,13 +22,23 @@ function PriceRow({ label, name, price, unit, quality, accent }: { label: string
   );
 }
 
-export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: { insight: Insight; onBack: () => void; onFeedback: (a: "snooze" | "dismiss" | "accept") => void; onHandoff: () => void; busy: boolean }) {
+export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: { insight: Insight; onBack: () => void; onFeedback: (a: "snooze" | "dismiss" | "accept", paused?: string[]) => void; onHandoff: () => void; busy: boolean }) {
   const [why, setWhy] = useState(false);
+  const services = insight.services ?? [];
+  // Suggest pausing the cheapest one; the customer decides.
+  const [paused, setPaused] = useState<Set<string>>(() => new Set(services.length ? [services[services.length - 1].name] : []));
+  const togglePause = (name: string) => {
+    const next = new Set(paused);
+    if (next.has(name)) next.delete(name);
+    else next.add(name);
+    setPaused(next);
+  };
+  const pausedYear = services.filter((x) => paused.has(x.name)).reduce((sum, x) => sum + x.monthly, 0) * 12;
   const a = insight.alternative;
   const done = insight.status !== "new";
   const unit = insight.period === "once" ? "" : "/maand";
   const cta =
-    insight.kind === "overlap" ? "Beheer abonnementen" : insight.kind === "purchase" ? `Bekijk bij ${a?.provider}` : insight.category === "groceries" || insight.category === "fuel" ? `Probeer ${a?.provider}` : `Overstappen naar ${a?.provider}`;
+    insight.kind === "overlap" ? `Pauzeer ${paused.size} abonnement${paused.size === 1 ? "" : "en"}` : insight.kind === "purchase" ? `Bekijk bij ${a?.provider}` : insight.category === "groceries" || insight.category === "fuel" ? `Probeer ${a?.provider}` : `Overstappen naar ${a?.provider}`;
 
   return (
     <div className="flex h-full flex-col">
@@ -54,6 +64,25 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
             <p className="min-w-0 text-[15px] leading-snug text-kbc-text">{insight.explanation}</p>
           </div>
         </div>
+
+        {services.length > 0 && (
+          <div className="mt-3 overflow-hidden rounded-card bg-white shadow-card">
+            {services.map((sv, idx) => {
+              const off = paused.has(sv.name);
+              return (
+                <button key={sv.name} onClick={() => togglePause(sv.name)} disabled={done} className={`flex w-full items-center gap-3 px-4 py-3 text-left ${idx ? "border-t border-kbc-bg" : ""}`}>
+                  <span className={`min-w-0 flex-1 text-[15px] font-extrabold ${off ? "text-kbc-muted line-through" : "text-kbc-text"}`}>{sv.name}</span>
+                  <span className={`shrink-0 text-[15px] font-bold ${off ? "text-kbc-muted line-through" : "text-kbc-text"}`}>{eur(sv.monthly, 2)}</span>
+                  <span className={`w-[82px] shrink-0 rounded-full py-1.5 text-center text-[12px] font-extrabold ${off ? "bg-kbc-navy text-white" : "bg-kbc-bg text-kbc-navy"}`}>{off ? "Pauzeren" : "Houden"}</span>
+                </button>
+              );
+            })}
+            <div className="flex items-center justify-between gap-3 bg-[#E9F7EE] px-4 py-3">
+              <span className="text-[14px] font-bold text-kbc-text">Besparing</span>
+              <span className="text-right text-[18px] font-extrabold text-kbc-green">{eur(pausedYear)} <span className="text-[12px]">per jaar</span></span>
+            </div>
+          </div>
+        )}
 
         {a && (
           <div className="mt-3 overflow-hidden rounded-card bg-white shadow-card">
@@ -108,7 +137,7 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
           </div>
         ) : (
           <div className="mt-5 flex flex-col gap-2">
-            <button disabled={busy} onClick={insight.kind === "overlap" ? () => onFeedback("accept") : onHandoff} className="flex min-h-14 items-center justify-center gap-2 rounded-full bg-kbc-blue px-5 py-3 text-center text-[16px] font-extrabold leading-tight text-white shadow-card disabled:opacity-60">
+            <button disabled={busy || (insight.kind === "overlap" && paused.size === 0)} onClick={insight.kind === "overlap" ? () => onFeedback("accept", [...paused]) : onHandoff} className="flex min-h-14 items-center justify-center gap-2 rounded-full bg-kbc-blue px-5 py-3 text-center text-[16px] font-extrabold leading-tight text-white shadow-card disabled:opacity-60">
               <span className="min-w-0">{cta}</span> <ArrowRight size={18} className="shrink-0" />
             </button>
             <div className="flex gap-2">

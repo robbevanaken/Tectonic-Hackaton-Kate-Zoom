@@ -100,10 +100,10 @@ export default function App() {
     setScreen({ name: "insight", id });
   };
 
-  const feedback = async (id: string, action: "snooze" | "dismiss" | "accept") => {
+  const feedback = async (id: string, action: "snooze" | "dismiss" | "accept", paused?: string[]) => {
     setBusy(true);
     try {
-      await api.feedback(id, action);
+      await api.feedback(id, action, paused);
       await load(false);
     } finally {
       setBusy(false);
@@ -148,7 +148,7 @@ export default function App() {
         <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} onInvest={() => setScreen({ name: "invest" })} />
       )}
       {screen.name === "insight" && current && (
-        <InsightDetail insight={current} busy={busy} onBack={() => setScreen({ name: "switch" })} onFeedback={(a) => feedback(current.id, a)} onHandoff={() => setScreen({ name: "handoff", id: current.id })} />
+        <InsightDetail insight={current} busy={busy} onBack={() => setScreen({ name: "switch" })} onFeedback={(a, paused) => feedback(current.id, a, paused)} onHandoff={() => setScreen({ name: "handoff", id: current.id })} />
       )}
       {screen.name === "handoff" && current && (
         <HandoffConsent insight={current} onBack={() => setScreen({ name: "insight", id: current.id })} onGo={(token) => setScreen({ name: "provider", id: current.id, token })} />

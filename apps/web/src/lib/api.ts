@@ -11,6 +11,7 @@ export interface Insight {
   savingsYear: number;
   period: "year" | "once";
   product?: string;
+  services?: { name: string; monthly: number }[];
   confidence: number;
   moments: Moment[];
   relevance: number;
@@ -94,7 +95,7 @@ export const api = {
   insights: () => call<{ asOf: string; insights: Insight[] }>("/insights"),
   notification: () => call<{ notification: Insight | null; reason: string }>("/notification"),
   delivered: (insightId: string) => call<{ ok: true }>("/notification/delivered", { method: "POST", body: JSON.stringify({ insightId }) }),
-  feedback: (id: string, action: "snooze" | "dismiss" | "accept") => call<{ ok: true; status: Insight["status"] }>(`/insights/${id}/feedback`, { method: "POST", body: JSON.stringify({ action }) }),
+  feedback: (id: string, action: "snooze" | "dismiss" | "accept", paused?: string[]) => call<{ ok: true; status: Insight["status"] }>(`/insights/${id}/feedback`, { method: "POST", body: JSON.stringify({ action, paused }) }),
   transactions: (limit = 40) => call<{ transactions: Tx[] }>(`/transactions?limit=${limit}`),
   handoffPreview: (id: string) => call<HandoffPreview>(`/insights/${id}/handoff`),
   handoffCreate: (id: string, fields: string[]) => call<{ token: string; expiresAt: string; provider: string }>(`/insights/${id}/handoff`, { method: "POST", body: JSON.stringify({ fields }) }),

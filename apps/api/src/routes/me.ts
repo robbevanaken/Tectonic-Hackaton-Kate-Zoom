@@ -110,7 +110,7 @@ me.get("/notification", requireConsent, async (req, res) => {
   res.json({ notification: { ...decision.insight, explanation: text, explanationSource: source }, reason: decision.reason });
 });
 
-const feedbackSchema = z.object({ action: z.enum(["snooze", "dismiss", "accept"]) });
+const feedbackSchema = z.object({ action: z.enum(["snooze", "dismiss", "accept"]), paused: z.array(z.string().max(40)).max(10).optional() });
 me.post("/insights/:id/feedback", requireConsent, (req, res) => {
   const idParsed = z.string().regex(/^[a-z0-9-]{1,64}$/).safeParse(req.params.id);
   const parsed = feedbackSchema.safeParse(req.body);
@@ -125,7 +125,7 @@ me.post("/insights/:id/feedback", requireConsent, (req, res) => {
     return;
   }
   if (parsed.data.action === "accept" && !c.savings.some((s) => s.id === idParsed.data)) {
-    c.savings.push(entryFromInsight(insights.find((i) => i.id === idParsed.data)!, asOf(c)));
+    c.savings.push(entryFromInsight(insights.find((i) => i.id === idParsed.data)!, asOf(c), parsed.data.paused));
   }
   const until = parsed.data.action === "snooze" ? new Date(Date.parse(asOf(c)) + 30 * 86_400_000).toISOString().slice(0, 10) : undefined;
   c.feedback.push({ insightId: idParsed.data, action: parsed.data.action, at: asOf(c), until });

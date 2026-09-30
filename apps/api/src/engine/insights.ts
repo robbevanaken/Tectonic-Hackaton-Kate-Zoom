@@ -97,6 +97,7 @@ function overlapInsight(all: RecurringSpend[], asOf: string, feedback: Feedback[
     category: "streaming",
     title: `${streaming.length} streamingdiensten`,
     current: { name: streaming.map((s) => s.merchantName).join(", "), monthly: total, quality: 0 },
+    services: streaming.map((s) => ({ name: s.merchantName, monthly: s.currentMonthly })).sort((a, b) => b.monthly - a.monthly),
     savingsMonth,
     savingsYear,
     period: "year",

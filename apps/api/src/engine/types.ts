@@ -128,6 +128,8 @@ export interface Insight {
   savingsYear: number;
   /** "year" for recurring costs, "once" for a one-off purchase (savingsYear then holds the one-off amount). */
   period: "year" | "once";
+  /** For overlap tips: the subscriptions involved. */
+  services?: { name: string; monthly: number }[];
   /** For purchases: the product name. */
   product?: string;
   /** 0-1 */
