@@ -35,7 +35,9 @@ export async function explainWithKate(insight: Insight, firstName: string): Prom
     categorie: insight.category,
     huidig: insight.current,
     alternatief: insight.alternative ?? null,
-    besparing_per_jaar: insight.savingsYear,
+    besparing: insight.savingsYear,
+    besparing_type: insight.period === "once" ? "eenmalig" : "per jaar",
+    product: insight.product ?? null,
     waarom_nu: insight.whyNow,
     basistekst: template,
   };

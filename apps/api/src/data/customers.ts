@@ -1,4 +1,4 @@
-import type { Customer, Transaction } from "../engine/types.js";
+import type { Customer, Receipt, Transaction } from "../engine/types.js";
 
 /** Demo "today". The engine is pure w.r.t. this date so the demo is reproducible. */
 export const AS_OF = "2026-09-30";
@@ -76,8 +76,31 @@ function thomas(): Customer {
   frequent(b, addDays(start, 2), 7, "Delhaize Gent", "Kaartbetaling", 88, 142);
   frequent(b, addDays(start, 4), 9, "TotalEnergies Station", "Brandstof", 58, 78);
   noise(b, start);
+  // A physical one-off purchase with a digital receipt (e-ticket via Kate Wallet).
+  push(b, new Date("2026-09-21"), -399, "MediaMarkt Gent", "Kaartbetaling");
+  const tvTx = b.tx[b.tx.length - 1];
+  const receipts: Receipt[] = [
+    { transactionId: tvTx.id, merchantId: "mediamarkt", product: "Sony WH-1000XM5 koptelefoon (zwart)", ean: "4548736000017", price: 399, date: tvTx.date, returnDays: 30 },
+  ];
   b.tx.sort((x, y) => x.date.localeCompare(y.date));
-  return { id: "c-thomas", name: "Janssens Thomas", firstName: "Thomas", consent: true, transactions: b.tx, feedback: [], notified: [] };
+  return {
+    id: "c-thomas",
+    name: "Janssens Thomas",
+    firstName: "Thomas",
+    consent: true,
+    // Entirely fictional demo identity.
+    profile: { email: "thomas.janssens@example.be", phone: "+32 470 00 12 34", street: "Voorbeeldstraat 12", postcode: "9000", city: "Gent", birthDate: "1991-04-12", energyEan: "541448800000123456", easySwitchId: "ES-4821-7730", licensePlate: "1-ABC-123", bonusMalus: 3 },
+    transactions: b.tx,
+    receipts,
+    // Fictional history: two tips Thomas already acted on earlier this year.
+    savings: [
+      { id: "hist-gym", date: "2026-02-01", label: "Fitness Plus → SportCity (zelfde clubs)", amount: 96, period: "year" },
+      { id: "hist-laptop", date: "2026-06-14", label: "Laptop: prijsverschil terugbetaald", amount: 45, period: "once" },
+      { id: "hist-home", date: "2026-04-01", label: "Woningverzekering → KBC Woonverzekering", amount: 72, period: "year" },
+    ],
+    feedback: [],
+    notified: [],
+  };
 }
 
 /** Lien already has good deals: Kate should mostly stay quiet. */
@@ -93,7 +116,18 @@ function lien(): Customer {
   frequent(b, addDays(start, 1), 14, "DATS 24", "Brandstof", 40, 60);
   noise(b, start);
   b.tx.sort((x, y) => x.date.localeCompare(y.date));
-  return { id: "c-lien", name: "Vermeulen Lien", firstName: "Lien", consent: true, transactions: b.tx, feedback: [], notified: [] };
+  return {
+    id: "c-lien",
+    name: "Vermeulen Lien",
+    firstName: "Lien",
+    consent: true,
+    profile: { email: "lien.vermeulen@example.be", phone: "+32 470 00 56 78", street: "Proefdreef 3", postcode: "9820", city: "Merelbeke", birthDate: "1994-11-02", energyEan: "541448800000987654", easySwitchId: "ES-1093-5521" },
+    transactions: b.tx,
+    receipts: [],
+    savings: [{ id: "hist-energy", date: "2025-11-01", label: "Engie → Bolt Energie", amount: 380, period: "year" }],
+    feedback: [],
+    notified: [],
+  };
 }
 
 export const CUSTOMERS: Customer[] = [thomas(), lien()];

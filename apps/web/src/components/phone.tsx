@@ -20,7 +20,7 @@ export function StatusBar() {
 export function PhoneFrame({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-full items-center justify-center sm:py-6">
-      <div className="relative h-[100dvh] w-full overflow-hidden bg-kbc-bg sm:h-[844px] sm:w-[390px] sm:rounded-[48px] sm:border-[10px] sm:border-[#111] sm:shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
+      <div className="relative h-[100dvh] w-full overflow-hidden bg-kbc-bg sm:h-[864px] sm:w-[410px] sm:rounded-[48px] sm:border-[10px] sm:border-[#111] sm:shadow-[0_30px_80px_rgba(0,0,0,0.35)]">
         <div className="pointer-events-none absolute left-1/2 top-2 z-30 hidden h-[30px] w-[120px] -translate-x-1/2 rounded-full bg-[#111] sm:block" />
         {children}
       </div>

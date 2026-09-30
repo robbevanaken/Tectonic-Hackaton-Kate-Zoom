@@ -1,81 +1,85 @@
-# Kate Switch — KBC knows what you pay, and tells you when it matters
+# Kate Zoom — KBC knows what you pay, and tells you when it matters
 
 > Hackathon prototype (Tectonic × KBC, Gent, 30 Sept 2026). Challenge: *understand what each customer needs and respond at exactly the right moment.*
+> All data in this repo is fictional.
 
-Every KBC customer already tells the bank, month after month, where their money goes: energy, internet, mobile, insurance, groceries, fuel, streaming. **Kate Switch** turns that into a quiet, personal price-watch inside the KBC app. It builds a recurring-spend profile from the customer's own transactions, compares each fixed cost with the market, and only speaks up when three things are true at once:
+Every KBC customer already tells the bank, month after month, where their money goes. **Kate Zoom** turns that into a quiet, personal price-watch inside the KBC app:
 
-1. there is a **cheaper alternative of comparable quality** (never "cheaper but worse"),
-2. the saving is **worth an interruption** (≥ €50/year),
-3. it is **the right moment** — the bill just went up, the contract turns one year old, the debit just landed, winter is coming, or two subscriptions overlap.
+1. **Spot** — builds a recurring-spend profile from the customer's own transactions (energy, telecom, mobile, insurance, groceries, fuel, streaming) plus physical purchases from digital receipts.
+2. **Time it** — only nudges when there is a cheaper alternative of *comparable quality*, the saving is worth an interruption, and it is *the right moment*: the bill crept up, the contract turns one year, the debit just landed, winter is coming, subscriptions overlap, or a product you just bought is cheaper elsewhere while you can still return it.
+3. **Switch in one tap** — Kate prefills the provider's sign-up page with exactly the fields the customer approves, via a single-use 10-minute link. The provider never sees balances or spending.
+4. **Grow it** — everything Kate Zoom saved is tracked and can be invested in a KBC risk profile, with a live projection of what it grows to.
 
-Everything is explainable ("Waarom zie ik dit?"), consent-based, and capped at one push a week. If a customer already has good deals, Kate says so and stays quiet.
+Partners can offer exclusive **KBC-klantendeals**, shown transparently but excluded from the ranking, so the comparison stays on price and quality.
 
-![home](docs/screenshots/01-home-push.jpg) ![detail](docs/screenshots/02-insight-detail.jpg) ![overview](docs/screenshots/03-overview.jpg) ![lien](docs/screenshots/04-overview-lien-good.jpg)
+| | | | |
+|---|---|---|---|
+| ![](docs/screenshots/01-home-push.jpg) | ![](docs/screenshots/02-insight-detail.jpg) | ![](docs/screenshots/03-share-consent.jpg) | ![](docs/screenshots/04-provider-prefilled.jpg) |
+| ![](docs/screenshots/05-overview-savings.jpg) | ![](docs/screenshots/06-invest.jpg) | ![](docs/screenshots/07-purchase-tip.jpg) | |
 
-## Demo
+## Run it
 
 ```bash
 npm install
 npm run dev          # API on :4000, KBC-styled app on http://localhost:5180
-npm test             # engine tests (node:test)
+npm test             # 12 engine tests (node:test)
 ```
 
-Two demo personas (switch in *Instellingen*):
+The step-by-step demo script is in **[DEMO.md](DEMO.md)**. Submission text and video script are in [docs/SUBMISSION.md](docs/SUBMISSION.md).
 
 | Persona | Situation | What Kate does |
 |---|---|---|
-| **Thomas** | Engie bill crept from €142 → €168, Telenet contract turns 1 year in 4 weeks (and was debited 2 days ago), 3 streaming services, Delhaize shopper | Push: *"Bespaar zo'n €468 per jaar"* on energy (price creep + season). Overview lists 7 timed tips worth €1.715/yr. |
-| **Lien** | Bolt energy, Colruyt, DATS 24, Orange | No push. "Hier zit je goed" for energy, groceries, fuel. One small mobile tip. |
+| **Thomas** | Engie crept €142 → €168, Telenet contract turns 1 year (debited 2 days ago), 3 streaming services, Delhaize shopper, bought €399 headphones 9 days ago | Push *"Bespaar zo'n €468 per jaar"* on energy. Overview with 8 timed tips, headphones €70 cheaper at Coolblue within the return window, €131 already saved. |
+| **Lien** | Bolt, Colruyt, DATS 24 | No push. "Hier zit je goed" for energy, groceries, fuel. One small mobile tip that waits for a moment. |
 
-Optional: put `ANTHROPIC_API_KEY` in `.env` and Kate rewrites each explanation in her own voice (Claude Opus 5.5) from the engine's facts only. Without a key the deterministic Dutch templates are used — the demo works fully offline.
+Optional: `ANTHROPIC_API_KEY` in `.env` lets Kate rewrite each explanation in her own voice (Claude Opus 5.5) from the engine's facts only. Without a key the deterministic Dutch templates are used; the demo works fully offline.
 
 ## How it works
 
 ```
-transactions ──► categorize ──► detectRecurring ──► detectMoments ─┐
-   (KBC data)     (merchant       (cadence, avg,      (price creep,   │
-                   catalog)        trend, months)      contract window,│
-                                                       post-debit,     ├──► insights ──► rank ──► notification policy ──► app
-                                       offers ──► bestAlternative ─────┘   (savings ×      (1/week, ≥€50/yr,
-                                     (market feed)  (quality parity)        confidence ×    requires a live moment,
-                                                                            timing)         honours snooze/dismiss)
+transactions ─► categorize ─► detectRecurring ─► detectMoments ─┐
+receipts ─────────────────────► purchaseMatches ────────────────┤
+offers / product prices ─► bestAlternative (quality parity) ────┴─► insights ─► rank ─► notification policy ─► app
+                                                                                          │
+                          accept ─► handoff (consent, single-use token) ─► provider page   │
+                                 └► savings ledger ─► invest plan + projection ◄───────────┘
 ```
 
-`apps/api/src/engine/` — pure TypeScript, no framework, fully unit-tested (`engine.test.ts`):
+`apps/api/src/engine/` — pure TypeScript, no framework, unit-tested:
 
 | Module | Responsibility |
 |---|---|
-| `categorize.ts` | Merchant matching against a catalog (`data/merchants.ts`). Swap for KBC's classifier. |
-| `recurring.ts` | One row per merchant: cadence (monthly/weekly), current price, 14-month history, trend (last 3 vs first 3 months). |
-| `moments.ts` | The timing signals: `price_creep`, `contract_window`, `post_debit`, `seasonal`, `overlap`. Each adds relevance and a human reason. |
-| `match.ts` | Best cheaper alternative with **quality parity** (`quality ≥ current − 0.3`). KBC partner offers get **no boost** (tested). Basket categories (groceries, fuel) use a price index instead of a flat price. |
-| `insights.ts` | Builds insights, `relevance = min(1, savings/500) × confidence × (1 + Σ moment weights)`, and `pickNotification()` — the policy that decides *whether* and *what* to push. |
-| `explain.ts` / `kate.ts` | Deterministic Kate copy; optional Claude rewrite with strict "facts only" system prompt and template fallback. |
+| `categorize.ts` | Merchant matching against a catalog. Swap for KBC's own categorisation. |
+| `recurring.ts` | Cadence, current price, 14-month history, trend per merchant. |
+| `moments.ts` | Timing signals: `price_creep`, `contract_window`, `post_debit`, `seasonal`, `overlap`. |
+| `purchases.ts` | Same EAN cheaper at a seller with score ≥ 4.0, only inside the receipt's return window. |
+| `match.ts` | Best cheaper alternative with quality parity (`quality ≥ current − 0.3`). Partner offers and deals get no ranking boost (tested). |
+| `insights.ts` | `relevance = min(1, saving/500) × confidence × (1 + Σ moment weights)` and `pickNotification()`: ≥ €50, 1 push per 7 days, **no moment → no push**, honours snooze/dismiss. |
+| `handoff.ts` | Per-category prefill (EAN code, Easy Switch-ID, licence plate…), required vs optional fields, single-use 10-minute tokens. |
+| `savings.ts` | Ledger of realised savings, run rate, and a monthly-compounding projection for three risk profiles. |
+| `explain.ts` / `kate.ts` | Deterministic Kate copy; optional Claude rewrite with a facts-only prompt and template fallback. |
 
-`apps/api/src/routes/me.ts` — REST API, all routes scoped to the bearer token's own customer:
+REST API (`apps/api/src/routes/`), all `/api/me` routes scoped to the bearer token's own customer:
 
 | Route | Purpose |
 |---|---|
-| `GET /api/me` | Profile, consent flag, demo date |
-| `POST /api/me/consent` | Toggle analysis (everything below returns 403 without it) |
-| `GET /api/me/spending` | Category breakdown + recurring costs |
-| `GET /api/me/insights` | Ranked, explained insights |
-| `GET /api/me/notification` | The one push Kate would send now, and *why* (or why not) |
-| `POST /api/me/insights/:id/feedback` | `accept` / `snooze` (30 d) / `dismiss` — feeds back into ranking |
-| `POST /api/me/notification/delivered` | Starts the 7-day cooldown |
+| `GET /api/me` · `POST /api/me/consent` | Profile, opt-in toggle (everything below returns 403 without consent) |
+| `GET /api/me/spending` · `GET /api/me/insights` | Category breakdown, ranked and explained tips |
+| `GET /api/me/notification` · `POST /api/me/notification/delivered` | The one push Kate would send now and why, cooldown |
+| `POST /api/me/insights/:id/feedback` | `accept` / `snooze` / `dismiss`; accept adds to the savings ledger |
+| `GET/POST /api/me/insights/:id/handoff` | Preview the prefill, then create a single-use token for the approved fields |
+| `POST /api/handoff/redeem` | Provider side: redeem the token once (410 when used or expired) |
+| `GET /api/me/savings` · `POST /api/me/invest/projection` · `POST /api/me/invest` | Savings ledger, projection, start plan (capped at what Kate actually saved) |
 
-`apps/web/` — React + Tailwind mock of the KBC Mobile app (Kate search bar, account cards, "Voor jou" feed, bottom nav) with the Kate Switch module: push banner, overview, insight detail with comparison + monthly chart + "Waarom zie ik dit?", settings with consent.
+`apps/web/` — React + Tailwind mock of the KBC Mobile app (Kate search bar, account cards, "Voor jou" feed, bottom nav) with the Kate Zoom module: push, overview, detail, consent, simulated provider page, invest.
 
-## Why this wins the challenge
+## Business model
 
-- **Adapts to each customer's data** — profile is built from their own transactions; Lien and Thomas get completely different (or no) tips.
-- **Right moment, not just right offer** — timing is a first-class signal in the ranking, and the notification policy is explicit and inspectable in Settings.
-- **Trust by design** — quality parity, no partner bias, transparency panel, consent toggle, weekly cap, feedback loop.
-- **Fits KBC** — built in the existing UX (Kate tip cards in "Voor jou", Kate as the voice), extends Kate's "No stress. Kate it." promise to fixed costs.
+Customers save without comparing or filling in forms. KBC gets engagement and new recurring investment inflow. Partners (energy, telecom, retail) offer exclusive discounts to KBC customers and pay per switch; a prefilled, consented lead converts far better than an ad. Neutrality is a hard rule: deals are shown but never change the ranking.
 
 ## Security
 
-See [SECURITY.md](SECURITY.md). Summary: bearer-scoped routes (no ids in URLs), zod validation, helmet + CSP, rate limiting, no secrets in repo, data minimisation towards the LLM, 0 `npm audit` findings.
+See [SECURITY.md](SECURITY.md): bearer-scoped routes (no ids in URLs), consent gate, zod validation, helmet + CSP, rate limiting, single-use handoff tokens with field-level consent, data minimisation towards providers and the LLM, no secrets in the repo, 0 `npm audit` findings.
 
 ## Repo layout
 
@@ -83,4 +87,5 @@ See [SECURITY.md](SECURITY.md). Summary: bearer-scoped routes (no ids in URLs), 
 apps/api   Express + TypeScript API and the analysis engine (+ tests)
 apps/web   Vite + React + Tailwind KBC-styled app
 docs/      Submission text, video script, screenshots
+DEMO.md    Demo script for the presenter (Dutch)
 ```

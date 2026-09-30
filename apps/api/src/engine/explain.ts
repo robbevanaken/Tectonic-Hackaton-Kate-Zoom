@@ -11,6 +11,10 @@ export function explainTemplate(i: Insight): string {
   if (i.kind === "overlap") {
     return `Je betaalt ${eur(i.current.monthly)} per maand voor ${i.current.name}. Eén dienst pauzeren wanneer je ze weinig gebruikt, bespaart je zo'n ${eur(i.savingsYear)} per jaar. Je kan ze later altijd opnieuw activeren.`;
   }
+  if (i.kind === "purchase") {
+    const a = i.alternative!;
+    return `${i.whyNow} ${a.provider} verkoopt exact hetzelfde model voor ${eur(a.monthly)} in plaats van ${eur(i.current.monthly)} (verkopersscore ${score(a.quality)}). Vraag ${i.current.name} eerst om het verschil bij te passen; lukt dat niet, dan kan je nog ruilen en bespaar je ${eur(i.savingsYear)}.`;
+  }
   if (i.kind === "creep") {
     return `${i.whyNow} Er is nu geen betere aanbieder van dezelfde kwaliteit, maar ik hou het voor je in het oog.`;
   }

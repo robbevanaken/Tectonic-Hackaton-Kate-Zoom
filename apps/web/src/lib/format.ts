@@ -13,6 +13,7 @@ export const CATEGORY_LABEL: Record<string, string> = {
   fuel: "Brandstof",
   fashion: "Kleding",
   leisure: "Vrije tijd",
+  electronics: "Aankoop",
   other: "Overige",
   income: "Inkomen",
 };
@@ -24,7 +25,11 @@ export const MOMENT_LABEL: Record<string, string> = {
   overlap: "Dubbelop",
   seasonal: "Seizoen",
   better_deal: "Beter aanbod",
+  return_window: "Retour nog mogelijk",
+  price_drop: "Nu goedkoper",
 };
+
+export const periodLabel = (period: "year" | "once") => (period === "once" ? "eenmalig" : "per jaar");
 
 export const formatDate = (iso: string) =>
   new Date(iso).toLocaleDateString("nl-BE", { day: "numeric", month: "long" });

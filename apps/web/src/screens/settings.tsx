@@ -20,7 +20,7 @@ export function SettingsScreen({ me, persona, onPersona, onConsent, onReset, onB
         <h1 className="text-[20px] font-extrabold text-kbc-navy">Instellingen</h1>
       </div>
       <div className="no-scrollbar flex-1 overflow-y-auto px-4 pb-8 pt-4">
-        <h2 className="flex items-center gap-2 text-[15px] font-extrabold text-kbc-navy"><KateMark size={20} /> Kate Switch</h2>
+        <h2 className="flex items-center gap-2 text-[15px] font-extrabold text-kbc-navy"><KateMark size={20} /> Kate Zoom</h2>
         <div className="mt-2 rounded-card bg-white shadow-card">
           <div className="flex items-center gap-3 p-4">
             <span className="min-w-0 flex-1">
@@ -35,7 +35,7 @@ export function SettingsScreen({ me, persona, onPersona, onConsent, onReset, onB
           </div>
           <div className="flex items-start gap-3 border-t border-kbc-bg p-4 text-[12px] text-kbc-muted">
             <Bell size={16} className="mt-0.5 shrink-0 text-kbc-navy" />
-            <span><b className="text-kbc-text">Meldingsbeleid:</b> max. 1 per week, enkel bij ≥ € 50 per jaar én enkel op een moment dat het je iets zegt (net afgeschreven, contract loopt af, prijs stijgt, seizoen). Zonder zo'n moment wacht de tip gewoon in Kate Switch.<br /><span className="italic">Nu: {notificationReason || "…"}</span></span>
+            <span><b className="text-kbc-text">Meldingsbeleid:</b> max. 1 per week, enkel bij ≥ € 50 per jaar én enkel op een moment dat het je iets zegt (net afgeschreven, contract loopt af, prijs stijgt, seizoen). Zonder zo'n moment wacht de tip gewoon in Kate Zoom.<br /><span className="italic">Nu: {notificationReason || "…"}</span></span>
           </div>
         </div>
 

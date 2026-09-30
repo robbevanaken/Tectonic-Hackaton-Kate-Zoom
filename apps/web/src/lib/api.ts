@@ -2,13 +2,15 @@ export interface Moment { type: string; weight: number; reason: string }
 export interface MonthTotal { month: string; total: number }
 export interface Insight {
   id: string;
-  kind: "switch" | "overlap" | "creep";
+  kind: "switch" | "overlap" | "creep" | "purchase";
   category: string;
   title: string;
   current: { name: string; monthly: number; quality: number };
-  alternative?: { offerId: string; provider: string; monthly: number; quality: number; source: string; partner: boolean; note: string; switchEffort: "low" | "medium" };
+  alternative?: { offerId: string; provider: string; monthly: number; quality: number; source: string; partner: boolean; partnerDeal?: string; note: string; switchEffort: "low" | "medium" };
   savingsMonth: number;
   savingsYear: number;
+  period: "year" | "once";
+  product?: string;
   confidence: number;
   moments: Moment[];
   relevance: number;
@@ -22,9 +24,25 @@ export interface Insight {
 export interface Me { id: string; name: string; firstName: string; consent: boolean; asOf: string; kate: "claude" | "template" }
 export interface Recurring { merchantId: string; merchantName: string; category: string; cadence: string; monthlyAvg: number; currentMonthly: number; occurrences: number; trendPct: number; quality: number }
 export interface Spending { asOf: string; months: number; categories: { category: string; monthlyAvg: number }[]; recurring: Recurring[] }
+export interface HandoffField { key: string; label: string; value: string; required: boolean }
+export interface HandoffPreview { provider: string; purpose: string; fields: HandoffField[] }
+export interface HandoffRedeemed { provider: string; purpose: string; fields: Omit<HandoffField, "required">[] }
+
+export type RiskProfile = "defensief" | "gebalanceerd" | "dynamisch";
+export interface SavingEntry { id: string; date: string; label: string; amount: number; period: "year" | "once" }
+export interface InvestPlan { profile: RiskProfile; lump: number; monthly: number; years: number; startedAt: string }
+export interface Savings {
+  realized: number;
+  yearly: number;
+  entries: SavingEntry[];
+  plan: InvestPlan | null;
+  profiles: Record<RiskProfile, { label: string; expectedReturn: number; risk: string }>;
+}
+export interface ProjectionPoint { year: number; invested: number; value: number }
+
 export interface Tx { id: string; date: string; amount: number; merchantName: string; category: string }
 
-const PERSONA_KEY = "kate-switch-persona";
+const PERSONA_KEY = "kate-zoom-persona";
 export const PERSONAS = [
   { token: "demo-thomas", label: "Thomas (kan besparen)" },
   { token: "demo-lien", label: "Lien (zit al goed)" },
@@ -77,5 +95,16 @@ export const api = {
   delivered: (insightId: string) => call<{ ok: true }>("/notification/delivered", { method: "POST", body: JSON.stringify({ insightId }) }),
   feedback: (id: string, action: "snooze" | "dismiss" | "accept") => call<{ ok: true; status: Insight["status"] }>(`/insights/${id}/feedback`, { method: "POST", body: JSON.stringify({ action }) }),
   transactions: (limit = 40) => call<{ transactions: Tx[] }>(`/transactions?limit=${limit}`),
+  handoffPreview: (id: string) => call<HandoffPreview>(`/insights/${id}/handoff`),
+  handoffCreate: (id: string, fields: string[]) => call<{ token: string; expiresAt: string; provider: string }>(`/insights/${id}/handoff`, { method: "POST", body: JSON.stringify({ fields }) }),
+  /** Provider side — no customer auth, the one-time token is the credential. */
+  handoffRedeem: async (token: string): Promise<HandoffRedeemed> => {
+    const res = await fetch("/api/handoff/redeem", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ token }) });
+    if (!res.ok) throw new ApiError(res.status, (await res.json().catch(() => ({}))).error ?? "error");
+    return res.json();
+  },
+  savings: () => call<Savings>("/savings"),
+  projection: (p: Omit<InvestPlan, "startedAt">) => call<{ points: ProjectionPoint[] }>("/invest/projection", { method: "POST", body: JSON.stringify(p) }),
+  invest: (p: Omit<InvestPlan, "startedAt">) => call<{ plan: InvestPlan }>("/invest", { method: "POST", body: JSON.stringify(p) }),
   reset: () => call<{ ok: true }>("/reset", { method: "POST" }),
 };

@@ -4,6 +4,8 @@ import { detectRecurring } from "./recurring.js";
 import { detectMoments } from "./moments.js";
 import { bestAlternative } from "./match.js";
 import { explainTemplate } from "./explain.js";
+import { purchaseMatches } from "./purchases.js";
+import { MERCHANT_BY_ID } from "../data/merchants.js";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
@@ -20,6 +22,7 @@ const CONFIDENCE: Record<string, number> = {
   groceries: 0.6, // basket composition is an estimate
   fuel: 0.65,
   streaming: 0.7,
+  electronics: 0.95, // exact same EAN
 };
 
 function relevance(savingsYear: number, confidence: number, moments: Moment[]): number {
@@ -59,10 +62,11 @@ function switchInsight(r: RecurringSpend, asOf: string, all: RecurringSpend[], f
     title: match ? `${r.merchantName} → ${match.offer.provider}` : `${r.merchantName} wordt duurder`,
     current: { name: r.merchantName, monthly: r.currentMonthly, quality: r.quality },
     alternative: match
-      ? { offerId: match.offer.id, provider: match.offer.provider, monthly: match.monthly, quality: match.offer.quality, source: match.offer.source, partner: match.offer.partner, note: match.offer.note, switchEffort: match.offer.switchEffort }
+      ? { offerId: match.offer.id, provider: match.offer.provider, monthly: match.monthly, quality: match.offer.quality, source: match.offer.source, partner: match.offer.partner, partnerDeal: match.offer.partnerDeal, note: match.offer.note, switchEffort: match.offer.switchEffort }
       : undefined,
     savingsMonth,
     savingsYear,
+    period: "year",
     confidence,
     moments,
     relevance: relevance(savingsYear, confidence, moments),
@@ -94,6 +98,7 @@ function overlapInsight(all: RecurringSpend[], asOf: string, feedback: Feedback[
     current: { name: streaming.map((s) => s.merchantName).join(", "), monthly: total, quality: 0 },
     savingsMonth,
     savingsYear,
+    period: "year",
     confidence: CONFIDENCE.streaming,
     moments,
     relevance: relevance(savingsYear, CONFIDENCE.streaming, moments),
@@ -124,6 +129,34 @@ export function analyze(customer: Customer, asOf: string): Analysis {
   }
   const overlap = overlapInsight(recurring, asOf, customer.feedback);
   if (overlap) insights.push(overlap);
+  for (const m of purchaseMatches(customer, asOf)) {
+    const id = `purchase-${m.receipt.ean}-${m.offer.id}`;
+    const shop = MERCHANT_BY_ID.get(m.receipt.merchantId)?.name ?? "Winkel";
+    const confidence = CONFIDENCE.electronics;
+    const insight: Insight = {
+      id,
+      kind: "purchase",
+      category: "electronics",
+      title: `${m.receipt.product.split(" (")[0]}: ${m.offer.seller} is goedkoper`,
+      product: m.receipt.product,
+      current: { name: shop, monthly: m.receipt.price, quality: MERCHANT_BY_ID.get(m.receipt.merchantId)?.quality ?? 0 },
+      alternative: { offerId: m.offer.id, provider: m.offer.seller, monthly: m.offer.price, quality: m.offer.quality, source: m.offer.source, partner: false, partnerDeal: m.offer.partnerDeal, note: m.offer.note, switchEffort: "low" },
+      savingsMonth: 0,
+      savingsYear: m.saving,
+      period: "once",
+      confidence,
+      moments: m.moments,
+      relevance: relevance(m.saving, confidence, m.moments),
+      whyNow: m.moments[0].reason,
+      explanation: "",
+      explanationSource: "template",
+      dataPoints: 1,
+      byMonth: [],
+      status: statusFor(id, customer.feedback, asOf),
+    };
+    insight.explanation = explainTemplate(insight);
+    insights.push(insight);
+  }
   insights.sort((a, b) => b.relevance - a.relevance);
   return { recurring, insights };
 }

@@ -6,6 +6,8 @@ import { analyze, pickNotification } from "../engine/insights.js";
 import { explainWithKate, kateEnabled } from "../engine/kate.js";
 import { categorize } from "../engine/categorize.js";
 import type { Customer } from "../engine/types.js";
+import { createHandoff, previewHandoff } from "../engine/handoff.js";
+import { entryFromInsight, PROFILES, project, savingsSummary, type RiskProfile } from "../engine/savings.js";
 
 interface AuthedRequest extends Request {
   customer: Customer;
@@ -105,9 +107,95 @@ me.post("/insights/:id/feedback", requireConsent, (req, res) => {
     res.status(404).json({ error: "not_found" });
     return;
   }
+  if (parsed.data.action === "accept" && !c.savings.some((s) => s.id === idParsed.data)) {
+    c.savings.push(entryFromInsight(insights.find((i) => i.id === idParsed.data)!, asOf()));
+  }
   const until = parsed.data.action === "snooze" ? new Date(Date.parse(asOf()) + 30 * 86_400_000).toISOString().slice(0, 10) : undefined;
   c.feedback.push({ insightId: idParsed.data, action: parsed.data.action, at: asOf(), until });
   res.json({ ok: true, status: parsed.data.action === "snooze" ? "snoozed" : parsed.data.action === "dismiss" ? "dismissed" : "accepted" });
+});
+
+const idSchema = z.string().regex(/^[a-z0-9-]{1,64}$/);
+
+/** What Kate would prefill at the provider (shown to the customer before anything is shared). */
+me.get("/insights/:id/handoff", requireConsent, (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  if (!id.success) {
+    res.status(422).json({ error: "invalid_id" });
+    return;
+  }
+  const c = (req as AuthedRequest).customer;
+  const insight = analyze(c, asOf()).insights.find((i) => i.id === id.data);
+  const preview = insight ? previewHandoff(c, insight) : null;
+  if (!preview) {
+    res.status(404).json({ error: "not_found" });
+    return;
+  }
+  res.json(preview);
+});
+
+/** Customer approved (a subset of) the fields → single-use, 10-minute token for the provider page. */
+const handoffSchema = z.object({ fields: z.array(z.string().regex(/^[a-z]{1,20}$/)).max(20) });
+me.post("/insights/:id/handoff", requireConsent, (req, res) => {
+  const id = idSchema.safeParse(req.params.id);
+  const body = handoffSchema.safeParse(req.body);
+  if (!id.success || !body.success) {
+    res.status(422).json({ error: "invalid_body" });
+    return;
+  }
+  const c = (req as AuthedRequest).customer;
+  const insight = analyze(c, asOf()).insights.find((i) => i.id === id.data);
+  if (!insight) {
+    res.status(404).json({ error: "not_found" });
+    return;
+  }
+  const result = createHandoff(c, insight, body.data.fields);
+  if ("error" in result) {
+    res.status(422).json({ error: result.error });
+    return;
+  }
+  res.json({ token: result.token, expiresAt: new Date(result.expiresAt).toISOString(), provider: result.provider });
+});
+
+/** What Kate Zoom already saved, and the active investment plan. */
+me.get("/savings", requireConsent, (req, res) => {
+  const c = (req as AuthedRequest).customer;
+  res.json({ ...savingsSummary(c, asOf()), profiles: PROFILES });
+});
+
+const projectSchema = z.object({
+  profile: z.enum(["defensief", "gebalanceerd", "dynamisch"]),
+  lump: z.number().min(0).max(1_000_000),
+  monthly: z.number().min(0).max(10_000),
+  years: z.number().int().min(1).max(40),
+});
+
+/** Projection only (no side effects) — used for the live chart. */
+me.post("/invest/projection", requireConsent, (req, res) => {
+  const body = projectSchema.safeParse(req.body);
+  if (!body.success) {
+    res.status(422).json({ error: "invalid_body" });
+    return;
+  }
+  const { profile, lump, monthly, years } = body.data;
+  res.json({ points: project(lump, monthly, PROFILES[profile as RiskProfile].expectedReturn, years) });
+});
+
+/** Start the plan. Lump sum is capped at what Kate Zoom actually saved; monthly at the recurring savings. */
+me.post("/invest", requireConsent, (req, res) => {
+  const body = projectSchema.safeParse(req.body);
+  if (!body.success) {
+    res.status(422).json({ error: "invalid_body" });
+    return;
+  }
+  const c = (req as AuthedRequest).customer;
+  const s = savingsSummary(c, asOf());
+  if (body.data.lump > s.realized + 0.01 || body.data.monthly > Math.ceil(s.yearly / 12)) {
+    res.status(422).json({ error: "exceeds_savings" });
+    return;
+  }
+  c.investPlan = { ...body.data, startedAt: asOf() };
+  res.json({ plan: c.investPlan });
 });
 
 /** Mark the current notification as delivered (the app calls this when it shows the push). */

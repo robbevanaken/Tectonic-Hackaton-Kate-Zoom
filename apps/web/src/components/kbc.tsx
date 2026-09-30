@@ -101,7 +101,7 @@ export function ForYouCard({ icon, children, onClick, kate, highlight }: { icon:
   );
 }
 
-export function BottomNav({ active = "start", onStart }: { active?: string; onStart?: () => void }) {
+export function BottomNav({ active = "start", onStart, fab = true }: { active?: string; onStart?: () => void; fab?: boolean }) {
   const items = [
     { id: "start", label: "Start", icon: Wallet },
     { id: "mijn", label: "Mijn KBC", icon: List },
@@ -110,8 +110,8 @@ export function BottomNav({ active = "start", onStart }: { active?: string; onSt
     { id: "aanbod", label: "Aanbod", icon: Layers },
   ];
   return (
-    <div className="absolute inset-x-0 bottom-0 z-20 px-3 pb-3">
-      <div className="absolute -top-14 right-5 grid h-16 w-16 place-items-center rounded-full bg-kbc-blue text-white shadow-[0_8px_20px_rgba(0,121,193,0.4)]"><ArrowLeftRight size={26} /></div>
+    <div className="absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-kbc-bg from-40% to-transparent px-3 pb-3 pt-4">
+      {fab && <div className="absolute -top-12 right-5 grid h-16 w-16 place-items-center rounded-full bg-kbc-blue text-white shadow-[0_8px_20px_rgba(0,121,193,0.4)]"><ArrowLeftRight size={26} /></div>}
       <div className="flex items-center justify-between rounded-[28px] bg-white px-2 py-2 shadow-[0_-4px_24px_rgba(10,46,92,0.12)]">
         {items.map(({ id, label, icon: Icon }) => (
           <button key={id} onClick={id === "start" ? onStart : undefined} className={`flex w-[68px] flex-col items-center gap-1 rounded-[22px] py-2 text-[12px] font-bold ${active === id ? "bg-kbc-bg text-kbc-navy" : "text-kbc-text"}`}>

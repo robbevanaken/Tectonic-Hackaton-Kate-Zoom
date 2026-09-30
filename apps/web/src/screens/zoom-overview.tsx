@@ -1,11 +1,11 @@
-import { ChevronLeft, ChevronRight, Check, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, Check, Info, PiggyBank } from "lucide-react";
 import { StatusBar } from "@/components/phone";
 import { KateMark, BottomNav } from "@/components/kbc";
 import { CategoryIcon, MomentPill } from "@/components/insight-bits";
-import { CATEGORY_LABEL, eur } from "@/lib/format";
-import type { Insight, Spending } from "@/lib/api";
+import { CATEGORY_LABEL, eur, periodLabel } from "@/lib/format";
+import type { Insight, Savings, Spending } from "@/lib/api";
 
-export function SwitchOverview({ firstName, insights, spending, onBack, onOpen, onSettings }: { firstName: string; insights: Insight[]; spending: Spending | null; onBack: () => void; onOpen: (i: Insight) => void; onSettings: () => void }) {
+export function ZoomOverview({ firstName, insights, spending, savings, onBack, onOpen, onSettings, onInvest }: { firstName: string; insights: Insight[]; spending: Spending | null; savings: Savings | null; onBack: () => void; onOpen: (i: Insight) => void; onSettings: () => void; onInvest: () => void }) {
   const active = insights.filter((i) => i.status === "new");
   const parked = insights.filter((i) => i.status !== "new");
   const total = active.reduce((s, i) => s + i.savingsYear, 0);
@@ -17,7 +17,7 @@ export function SwitchOverview({ firstName, insights, spending, onBack, onOpen, 
       <StatusBar />
       <div className="flex items-center gap-2 px-4 pt-2">
         <button onClick={onBack} className="grid h-11 w-11 place-items-center rounded-full bg-white shadow-card" aria-label="Terug"><ChevronLeft size={22} /></button>
-        <h1 className="flex flex-1 items-center gap-2 text-[20px] font-extrabold text-kbc-navy"><KateMark size={22} /> Kate Switch</h1>
+        <h1 className="flex flex-1 items-center gap-2 text-[20px] font-extrabold text-kbc-navy"><KateMark size={22} /> Kate Zoom</h1>
         <button onClick={onSettings} className="grid h-11 w-11 place-items-center rounded-full bg-white text-kbc-muted shadow-card" aria-label="Info"><Info size={20} /></button>
       </div>
 
@@ -34,6 +34,18 @@ export function SwitchOverview({ firstName, insights, spending, onBack, onOpen, 
           )}
         </div>
 
+        {savings && savings.realized > 0 && (
+          <button onClick={onInvest} className="mt-3 flex w-full items-center gap-3 rounded-card bg-white p-4 text-left shadow-card">
+            <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#E9F7EE] text-kbc-green"><PiggyBank size={24} /></span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-[12px] font-bold uppercase tracking-wide text-kbc-muted">Al bespaard met Kate Zoom</span>
+              <span className="block text-[20px] font-extrabold leading-tight text-kbc-green">{eur(savings.realized)} <span className="text-[12px] font-bold text-kbc-muted">+ {eur(savings.yearly)}/jaar</span></span>
+              <span className="block text-[13px] font-bold text-kbc-blue">{savings.plan ? `Belegd in profiel ${savings.profiles[savings.plan.profile].label}` : "Laat het groeien: beleg bij KBC"}</span>
+            </span>
+            <ChevronRight size={18} className="shrink-0 text-kbc-muted" />
+          </button>
+        )}
+
         {active.length > 0 && <h2 className="mt-6 text-[17px] font-extrabold text-kbc-navy">Tips op het juiste moment</h2>}
         <div className="mt-2 flex flex-col gap-3">
           {active.map((i, idx) => (
@@ -41,16 +53,16 @@ export function SwitchOverview({ firstName, insights, spending, onBack, onOpen, 
               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#E6F4FB] text-kbc-blue"><CategoryIcon category={i.category} /></span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[12px] font-bold uppercase tracking-wide text-kbc-muted">{CATEGORY_LABEL[i.category]}</span>
-                <span className="block truncate text-[15px] font-extrabold text-kbc-text">{i.title}</span>
+                <span className="line-clamp-2 block break-words text-[15px] font-extrabold leading-snug text-kbc-text">{i.title}</span>
                 <span className="mt-1 flex flex-wrap gap-1">
                   {i.moments.slice(0, 2).map((m) => <MomentPill key={m.type} type={m.type} strong={idx === 0} />)}
                 </span>
               </span>
-              <span className="text-right">
+              <span className="shrink-0 text-right">
                 <span className="block text-[17px] font-extrabold text-kbc-green">{eur(i.savingsYear)}</span>
-                <span className="block text-[11px] text-kbc-muted">per jaar</span>
+                <span className="block text-[11px] text-kbc-muted">{periodLabel(i.period)}</span>
               </span>
-              <ChevronRight size={18} className="text-kbc-muted" />
+              <ChevronRight size={18} className="shrink-0 text-kbc-muted" />
             </button>
           ))}
         </div>
@@ -78,9 +90,11 @@ export function SwitchOverview({ firstName, insights, spending, onBack, onOpen, 
             <div className="mt-2 flex flex-col gap-2">
               {parked.map((i) => (
                 <button key={i.id} onClick={() => onOpen(i)} className="flex items-center gap-3 rounded-card bg-white/70 p-3 text-left text-kbc-muted">
-                  <CategoryIcon category={i.category} size={18} />
-                  <span className="flex-1 truncate text-[14px] font-bold">{i.title}</span>
-                  <span className="text-[12px] font-bold">{i.status === "snoozed" ? "Herinnering over 30 dagen" : i.status === "accepted" ? "Overstap gestart" : "Niet interessant"}</span>
+                  <CategoryIcon category={i.category} size={18} className="shrink-0" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block break-words text-[14px] font-bold leading-snug">{i.title}</span>
+                    <span className="block text-[12px]">{i.status === "snoozed" ? "Herinnering over 30 dagen" : i.status === "accepted" ? (i.kind === "purchase" ? "Bekeken bij " + (i.alternative?.provider ?? "") : "Overstap aangevraagd") : "Niet interessant"}</span>
+                  </span>
                 </button>
               ))}
             </div>
@@ -107,7 +121,7 @@ export function SwitchOverview({ firstName, insights, spending, onBack, onOpen, 
           </>
         )}
       </div>
-      <BottomNav active="start" onStart={onBack} />
+      <BottomNav active="start" onStart={onBack} fab={false} />
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { KateMark } from "./kbc";
-import { eur } from "@/lib/format";
+import { eur, periodLabel } from "@/lib/format";
 import type { Insight } from "@/lib/api";
 
 export function Push({ insight, onOpen, onClose }: { insight: Insight | null; onOpen: () => void; onClose: () => void }) {
@@ -25,7 +25,7 @@ export function Push({ insight, onOpen, onClose }: { insight: Insight | null; on
                 <span className="flex items-center gap-1 font-bold text-kbc-text"><KateMark size={14} /> Kate</span>
                 <span>nu</span>
               </span>
-              <span className="block text-[14px] font-extrabold leading-tight text-kbc-text">Bespaar zo'n {eur(insight.savingsYear)} per jaar</span>
+              <span className="block text-[14px] font-extrabold leading-tight text-kbc-text">Bespaar zo'n {eur(insight.savingsYear)} {periodLabel(insight.period)}</span>
               <span className="line-clamp-2 block text-[13px] leading-snug text-kbc-text">{insight.whyNow}</span>
             </span>
           </button>

@@ -2,18 +2,29 @@ import { useCallback, useEffect, useState } from "react";
 import { PhoneFrame } from "@/components/phone";
 import { Push } from "@/components/push";
 import { HomeScreen } from "@/screens/home";
-import { SwitchOverview } from "@/screens/switch-overview";
+import { ZoomOverview } from "@/screens/zoom-overview";
 import { InsightDetail } from "@/screens/insight-detail";
 import { SettingsScreen } from "@/screens/settings";
-import { api, ApiError, getPersona, setPersona, PERSONAS, type Insight, type Me, type Spending } from "@/lib/api";
+import { HandoffConsent } from "@/screens/handoff-consent";
+import { ProviderPage } from "@/screens/provider-page";
+import { InvestScreen } from "@/screens/invest";
+import { api, ApiError, getPersona, setPersona, PERSONAS, type Insight, type Me, type Savings, type Spending } from "@/lib/api";
 
-type Screen = { name: "home" } | { name: "switch" } | { name: "insight"; id: string } | { name: "settings" };
+type Screen =
+  | { name: "home" }
+  | { name: "switch" }
+  | { name: "insight"; id: string }
+  | { name: "handoff"; id: string }
+  | { name: "provider"; id: string; token: string }
+  | { name: "invest" }
+  | { name: "settings" };
 
 export default function App() {
   const [persona, setPersonaState] = useState(getPersona());
   const [me, setMe] = useState<Me | null>(null);
   const [insights, setInsights] = useState<Insight[]>([]);
   const [spending, setSpending] = useState<Spending | null>(null);
+  const [savings, setSavings] = useState<Savings | null>(null);
   const [push, setPush] = useState<Insight | null>(null);
   const [pushReason, setPushReason] = useState("");
   const [screen, setScreen] = useState<Screen>({ name: "home" });
@@ -28,13 +39,15 @@ export default function App() {
       if (!m.consent) {
         setInsights([]);
         setSpending(null);
+        setSavings(null);
         setPush(null);
-        setPushReason("Kate Switch staat uit.");
+        setPushReason("Kate Zoom staat uit.");
         return;
       }
-      const [{ insights: ins }, sp, n] = await Promise.all([api.insights(), api.spending(), api.notification()]);
+      const [{ insights: ins }, sp, n, sv] = await Promise.all([api.insights(), api.spending(), api.notification(), api.savings()]);
       setInsights(ins);
       setSpending(sp);
+      setSavings(sv);
       setPushReason(n.reason);
       if (showPush && n.notification) {
         setTimeout(() => setPush(n.notification), 1200);
@@ -93,7 +106,7 @@ export default function App() {
   };
 
   const top = insights.find((i) => i.status === "new") ?? null;
-  const current = screen.name === "insight" ? insights.find((i) => i.id === screen.id) ?? null : null;
+  const current = "id" in screen ? insights.find((i) => i.id === screen.id) ?? null : null;
 
   return (
     <PhoneFrame>
@@ -103,13 +116,29 @@ export default function App() {
         <HomeScreen name={me?.name ?? ""} top={top} hasPush={!!push} onOpenSwitch={() => setScreen({ name: "switch" })} onOpenInsight={openInsight} onSettings={() => setScreen({ name: "settings" })} />
       )}
       {screen.name === "switch" && (
-        <SwitchOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} />
+        <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} onInvest={() => setScreen({ name: "invest" })} />
       )}
       {screen.name === "insight" && current && (
-        <InsightDetail insight={current} busy={busy} onBack={() => setScreen({ name: "switch" })} onFeedback={(a) => feedback(current.id, a)} />
+        <InsightDetail insight={current} busy={busy} onBack={() => setScreen({ name: "switch" })} onFeedback={(a) => feedback(current.id, a)} onHandoff={() => setScreen({ name: "handoff", id: current.id })} />
       )}
-      {screen.name === "insight" && !current && (
-        <SwitchOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} />
+      {screen.name === "handoff" && current && (
+        <HandoffConsent insight={current} onBack={() => setScreen({ name: "insight", id: current.id })} onGo={(token) => setScreen({ name: "provider", id: current.id, token })} />
+      )}
+      {screen.name === "provider" && (
+        <ProviderPage
+          token={screen.token}
+          onClose={() => setScreen({ name: "insight", id: screen.id })}
+          onSubmitted={async () => {
+            await feedback(screen.id, "accept");
+            setScreen({ name: "insight", id: screen.id });
+          }}
+        />
+      )}
+      {(screen.name === "insight" || screen.name === "handoff") && !current && (
+        <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} onInvest={() => setScreen({ name: "invest" })} />
+      )}
+      {screen.name === "invest" && savings && (
+        <InvestScreen savings={savings} onBack={() => setScreen({ name: "switch" })} onStarted={() => void load(false)} />
       )}
       {screen.name === "settings" && (
         <SettingsScreen me={me} persona={persona} onPersona={changePersona} onConsent={consent} onReset={reset} onBack={() => setScreen({ name: "home" })} notificationReason={pushReason} />

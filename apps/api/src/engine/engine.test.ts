@@ -6,6 +6,8 @@ import { detectRecurring } from "./recurring.js";
 import { bestAlternative, QUALITY_TOLERANCE } from "./match.js";
 import { analyze, pickNotification, PUSH_COOLDOWN_DAYS } from "./insights.js";
 import type { RecurringSpend } from "./types.js";
+import { purchaseMatches, MIN_SELLER_QUALITY } from "./purchases.js";
+import { createHandoff, redeemHandoff, previewHandoff, HANDOFF_TTL_MS } from "./handoff.js";
 
 const thomas = CUSTOMERS.find((c) => c.id === "c-thomas")!;
 const lien = CUSTOMERS.find((c) => c.id === "c-lien")!;
@@ -92,4 +94,53 @@ test("KBC partner offers get no ranking boost", () => {
     { id: "n", provider: "Ethias", category: "insurance" as const, monthly: 55, quality: 4.1, source: "t", partner: false, note: "", switchEffort: "low" as const },
   ];
   assert.equal(bestAlternative(r, offers)!.offer.id, "n");
+});
+
+test("physical purchase: same EAN cheaper at a reputable seller, only within the return window", () => {
+  const [m] = purchaseMatches(thomas, AS_OF);
+  assert.ok(m, "expected a purchase tip for the headphones");
+  assert.equal(m.offer.seller, "Coolblue"); // the €299 marketplace seller has score 3.2 → excluded
+  assert.ok(m.offer.quality >= MIN_SELLER_QUALITY);
+  assert.equal(m.saving, 70);
+  assert.ok(m.moments.some((x) => x.type === "return_window"));
+  assert.equal(purchaseMatches(thomas, "2026-10-25").length, 0, "no tip after the return window closed");
+  const insight = analyze(thomas, AS_OF).insights.find((i) => i.kind === "purchase")!;
+  assert.equal(insight.period, "once");
+});
+
+test("handoff: required fields enforced, only approved fields shared, single use, expires", () => {
+  const energy = analyze(thomas, AS_OF).insights.find((i) => i.category === "energy")!;
+  const preview = previewHandoff(thomas, energy)!;
+  assert.ok(preview.fields.some((f) => f.key === "ean"));
+  assert.ok(!preview.fields.some((f) => /iban|saldo|transact/i.test(f.label)), "never financial data");
+
+  assert.deepEqual(createHandoff(thomas, energy, ["name"]), { error: "required_fields_missing" });
+
+  const required = preview.fields.filter((f) => f.required).map((f) => f.key);
+  const h = createHandoff(thomas, energy, required);
+  assert.ok(!("error" in h));
+  if ("error" in h) return;
+  assert.ok(!h.fields.some((f) => f.key === "phone"), "optional field not approved → not shared");
+  assert.ok(redeemHandoff(h.token));
+  assert.equal(redeemHandoff(h.token), null, "single use");
+
+  const h2 = createHandoff(thomas, energy, required, 0);
+  if ("error" in h2) throw new Error("unexpected");
+  assert.equal(redeemHandoff(h2.token, HANDOFF_TTL_MS + 1), null, "expired");
+});
+
+test("savings ledger: recurring savings accrue per month, one-offs count once", async () => {
+  const { realizedToDate, yearlyRunRate, project } = await import("./savings.js");
+  const entries = [
+    { id: "a", date: "2026-01-01", label: "", amount: 120, period: "year" as const },
+    { id: "b", date: "2026-06-01", label: "", amount: 45, period: "once" as const },
+    { id: "c", date: "2026-12-01", label: "", amount: 999, period: "once" as const }, // future → ignored
+  ];
+  assert.equal(realizedToDate(entries, "2026-07-01"), 60 + 45);
+  assert.equal(yearlyRunRate(entries), 120);
+  const pts = project(1000, 100, 0.05, 10);
+  assert.equal(pts.length, 11);
+  assert.equal(pts[10].invested, 13000);
+  assert.ok(pts[10].value > pts[10].invested, "positive return grows the pot");
+  assert.equal(project(1000, 0, 0, 5)[5].value, 1000);
 });

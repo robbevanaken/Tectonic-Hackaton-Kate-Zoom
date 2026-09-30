@@ -1,43 +1,43 @@
-# Submission — Kate Switch
+# Submission — Kate Zoom
 
 ## Short description (paste into the form)
 
-**Kate Switch** is a module inside the KBC Mobile app that turns a customer's own transaction history into a personal price-watch. It builds a recurring-spend profile (energy, internet, mobile, insurance, groceries, fuel, streaming), compares every fixed cost with the market, and only nudges the customer when three things are true at once: there is a cheaper alternative of *comparable quality*, the saving is worth an interruption, and it is *the right moment* — the bill just crept up, the contract turns one year old, the debit just landed, winter is coming, or subscriptions overlap.
+**Kate Zoom** is a module inside the KBC Mobile app that turns a customer's own transactions into a personal price-watch, and turns what it saves into investments at KBC.
 
-The engine is deterministic and explainable: every tip shows how many payments it is based on, its confidence, the timing reason, and the independent quality source. Suggestions with a lower quality score are never shown, KBC's own products get no ranking boost, pushes are capped at one per week, and the customer can snooze, dismiss or switch Kate Switch off entirely (consent-first). Kate writes the message in her own voice (Claude), strictly from the engine's facts, with a template fallback so the feature never depends on the LLM.
+It builds a spending profile from the customer's payments (energy, internet, mobile, insurance, groceries, fuel, streaming) and from digital receipts for physical purchases. Kate only speaks up when three things are true at once: there is a cheaper alternative of *comparable quality*, the saving is worth an interruption, and it is *the right moment*: the bill just crept up, the contract turns one year old, the debit just landed, winter is coming, subscriptions overlap, or the headphones you bought 9 days ago are €70 cheaper elsewhere while you can still return them. No moment, no push.
 
-Two demo personas show adaptivity: Thomas gets a push worth €468/year on energy (price creep + season) and an overview of €1.715/year in timed tips; Lien, who already has good deals, gets no push and a "Hier zit je goed" list.
+Switching takes one tap. Kate shows exactly which details she will share (name, address, EAN code…), the customer unticks what they want, and the provider's page opens prefilled through a single-use, 10-minute link. Providers never see balances or spending. Everything Kate Zoom saves is tracked, and with one button the customer invests it in a KBC risk profile, with a live projection of what it grows to.
 
-Stack: TypeScript end-to-end — Express API with a pure, unit-tested analysis engine; React + Tailwind mock of the KBC app in KBC's UX; zod validation, helmet, CSP, rate limiting, bearer-scoped routes, 0 npm audit findings.
+KBC can partner with providers and retailers for exclusive customer deals. Those are shown transparently but never change the ranking: the comparison stays on price and quality, which keeps Kate trustworthy.
+
+Everything is explainable ("Waarom zie ik dit?"), opt-in, and capped at one push a week. Two fictional personas show adaptivity: Thomas gets a €468/year energy push and eight timed tips; Lien, who already has good deals, gets no push and a "Hier zit je goed" list.
+
+Stack: TypeScript end to end. Express API with a pure, unit-tested engine (12 tests); React + Tailwind mock in KBC's existing UX; zod validation, helmet, CSP, rate limiting, bearer-scoped routes, single-use handoff tokens, 0 npm audit findings. Claude optionally writes Kate's wording, strictly from the engine's facts.
 
 ## Judging map
 
 | Criterion | Where |
 |---|---|
-| Originality (30%) | Timing as a first-class ranking signal ("moments"), quality parity rule, explicit notification policy, "you're already fine" state, partner neutrality. |
-| Technical ability (30%) | Pure engine with 9 unit tests, deterministic synthetic data, ranking formula, feedback loop, optional LLM layer with fact-only prompt + fallback, KBC-faithful UI. |
-| Applicability (30%) | Built inside the KBC app UX, uses data KBC already has, extends Kate, GDPR-aware (consent, explanation, opt-out). |
-| Security (10%) | SECURITY.md: scoped auth, validation, headers, rate limit, data minimisation, no secrets, audit clean. |
+| Originality (30%) | Timing as a ranking signal and a hard push condition, quality parity rule, receipt-based purchase tips inside the return window, consented prefill handoff, savings-to-investment loop, "you're already fine" state. |
+| Technical ability (30%) | Pure engine with 12 unit tests, deterministic synthetic data, ranking formula, feedback loop, token-based handoff, compounding projection, optional LLM layer with facts-only prompt and fallback, KBC-faithful UI with zero overflow at 375px. |
+| Applicability (30%) | Built into the KBC app and Kate, uses data KBC already has, creates investment inflow and partner revenue for KBC, GDPR-aware (consent, explanation, field-level sharing, opt-out). |
+| Security (10%) | SECURITY.md: scoped auth, consent gate, validation, headers, rate limit, single-use tokens, data minimisation, no secrets, audit clean. |
 
 ## Video script (< 3 min)
 
-**0:00 – 0:20 — Hook.** *"KBC sees where every customer spends money each month: energy, telecom, groceries. What if Kate used that to tell you, at exactly the right moment, that you're paying too much — without ever nagging?"*
+Follow **[DEMO.md](../DEMO.md)** section 3; it is timed for 2:45. Suggested voice-over hooks:
 
-**0:20 – 0:50 — The push.** Open the app as Thomas. Push slides in: *"Bespaar zo'n €468 per jaar — je betaalt 18% meer dan in het begin."* *"Kate noticed Engie crept from €142 to €168 and that winter is coming. That's the moment."* Tap.
+- **Open (0:00):** "KBC already sees where every customer's money goes. What if Kate used that to tell you, at exactly the right moment, that you're paying too much?"
+- **Handoff (1:00):** "The customer types nothing. Kate prefills the provider's page with only what the customer approves, through a link that works once."
+- **Purchase (1:50):** "Not just subscriptions: same headphones, same barcode, €70 cheaper, and you can still return them."
+- **Invest (2:05):** "Saving becomes investing. Good for the customer, and the money stays at KBC."
+- **Close (2:45):** "Kate Zoom. No stress, Kate it."
 
-**0:50 – 1:30 — The insight.** Show Engie → Bolt: €168 vs €129, quality 4,1 vs 4,3 (Test Aankoop), €468/year, chart of 14 months with the creep. Open *Waarom zie ik dit?*: 14 payments, 90% confidence, the rules (no worse quality, 1 push a week, opt-out). *"Everything is explainable. Kate never shows something cheaper but worse."* Tap **Later** → it parks.
-
-**1:30 – 2:05 — The overview.** Back to Kate Switch: €1.715/year across 7 tips, each with its timing pill — Telenet: contract ends + just debited; 3 streaming services; Delhaize → Colruyt via price index. Scroll to *Waar je geld naartoe gaat*.
-
-**2:05 – 2:35 — Adaptivity + trust.** Settings: consent toggle + notification policy text. Switch to Lien: no push, *"Hier zit je goed"* for energy, groceries, fuel. *"Same engine, different customer, different behaviour — including silence."* Toggle consent off → 403, module empty.
-
-**2:35 – 2:55 — Under the hood.** 5-second flash of the engine folder + tests passing + SECURITY.md. *"Pure TypeScript engine, unit-tested, bearer-scoped API, zero audit findings. Kate writes the words with Claude, but only from the engine's facts."*
-
-**2:55 – 3:00 — Close.** *"Kate Switch. No stress. Kate it."*
+End with a 5-second flash of the engine folder, `npm test` passing, and SECURITY.md.
 
 ## Checklist
 
-- [ ] Make the GitHub repo **public** (`gh repo edit thomasvanaken/tectonic-hackaton --visibility public --accept-visibility-change-consequences`)
-- [ ] Record the video (script above), upload, paste link
-- [ ] Run the repo through Aikido, upload screenshots
-- [ ] Paste the short description
+- [ ] Make the GitHub repo **public**: `gh repo edit robbevanaken/tectonic-hackaton --visibility public --accept-visibility-change-consequences`
+- [ ] Record the video with DEMO.md, upload, paste the link
+- [ ] Run the repo through Aikido, upload the screenshots
+- [ ] Paste the short description above

@@ -8,6 +8,7 @@ export type Category =
   | "fuel"
   | "fashion"
   | "leisure"
+  | "electronics"
   | "income"
   | "other";
 
@@ -79,6 +80,8 @@ export interface Offer {
   source: string;
   /** True when this is a KBC product/partner. Shown transparently; no ranking boost. */
   partner: boolean;
+  /** Extra deal KBC negotiated with this provider, shown transparently. Not included in the price comparison. */
+  partnerDeal?: string;
   note: string;
   switchEffort: "low" | "medium";
 }
@@ -89,7 +92,9 @@ export type MomentType =
   | "post_debit"
   | "overlap"
   | "seasonal"
-  | "better_deal";
+  | "better_deal"
+  | "return_window"
+  | "price_drop";
 
 export interface Moment {
   type: MomentType;
@@ -98,7 +103,7 @@ export interface Moment {
   reason: string;
 }
 
-export type InsightKind = "switch" | "overlap" | "creep";
+export type InsightKind = "switch" | "overlap" | "creep" | "purchase";
 export type InsightStatus = "new" | "snoozed" | "dismissed" | "accepted";
 
 export interface Insight {
@@ -114,11 +119,16 @@ export interface Insight {
     quality: number;
     source: string;
     partner: boolean;
+    partnerDeal?: string;
     note: string;
     switchEffort: "low" | "medium";
   };
   savingsMonth: number;
   savingsYear: number;
+  /** "year" for recurring costs, "once" for a one-off purchase (savingsYear then holds the one-off amount). */
+  period: "year" | "once";
+  /** For purchases: the product name. */
+  product?: string;
   /** 0-1 */
   confidence: number;
   moments: Moment[];
@@ -141,12 +151,48 @@ export interface Feedback {
   until?: string;
 }
 
+/** Line-level data from a digital receipt (e.g. via Kate Wallet / e-ticket). Bank data alone has no product info. */
+export interface Receipt {
+  transactionId: string;
+  merchantId: string;
+  product: string;
+  /** EAN barcode: identifies the exact same product across shops. */
+  ean: string;
+  price: number;
+  date: string;
+  /** Return window printed on the receipt, in days. */
+  returnDays: number;
+}
+
+/** Customer master data KBC already holds (KYC). Only shared with a provider on explicit request. */
+export interface Profile {
+  email: string;
+  phone: string;
+  street: string;
+  postcode: string;
+  city: string;
+  birthDate: string;
+  /** Energy: EAN code of the grid connection. */
+  energyEan?: string;
+  /** Telecom: Easy Switch ID (Belgian regulated switching id). */
+  easySwitchId?: string;
+  licensePlate?: string;
+  bonusMalus?: number;
+}
+
+import type { SavingEntry, InvestPlan } from "./savings.js";
+
 export interface Customer {
   id: string;
   name: string;
   firstName: string;
   consent: boolean;
+  profile: Profile;
   transactions: Transaction[];
+  receipts: Receipt[];
+  /** Savings realised through Kate Zoom (accepted tips). */
+  savings: SavingEntry[];
+  investPlan?: InvestPlan;
   feedback: Feedback[];
   /** Dates (YYYY-MM-DD) on which a push notification was sent. */
   notified: { insightId: string; at: string }[];

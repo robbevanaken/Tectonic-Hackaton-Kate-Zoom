@@ -7,7 +7,7 @@ import type { Offer } from "../engine/types.js";
  */
 export const OFFERS: Offer[] = [
   // Energy — monthly for ~3.500 kWh + 12.000 kWh gas
-  { id: "o-bolt", provider: "Bolt Energie", category: "energy", monthly: 129, quality: 4.3, source: "Test Aankoop 09/2026", partner: false, note: "100% Belgische groene stroom, variabel tarief", switchEffort: "low" },
+  { id: "o-bolt", provider: "Bolt Energie", category: "energy", monthly: 129, quality: 4.3, source: "Test Aankoop 09/2026", partner: false, partnerDeal: "KBC-klantendeal: € 50 welkomstkorting op je eerste afrekening", note: "100% Belgische groene stroom, variabel tarief", switchEffort: "low" },
   { id: "o-luminus", provider: "Luminus", category: "energy", monthly: 139, quality: 4.0, source: "Test Aankoop 09/2026", partner: false, note: "Vast tarief 1 jaar", switchEffort: "low" },
   { id: "o-octa", provider: "Octa+", category: "energy", monthly: 131, quality: 3.7, source: "Test Aankoop 09/2026", partner: false, note: "Goedkoop, maar lagere klantscore", switchEffort: "low" },
   { id: "o-engie", provider: "Engie", category: "energy", monthly: 149, quality: 4.1, source: "Test Aankoop 09/2026", partner: false, note: "Nieuw-klantentarief (Easy Fixed)", switchEffort: "low" },
@@ -29,6 +29,25 @@ export const OFFERS: Offer[] = [
   // Fuel — price index vs TotalEnergies
   { id: "o-dats", provider: "DATS 24", category: "fuel", priceIndex: 0.94, quality: 3.9, source: "Carbu.com gemiddelde 09/2026", partner: false, note: "Gem. €0,10/l goedkoper, 1,8 km van je vaste station", switchEffort: "low" },
   { id: "o-gabriels", provider: "Gabriëls", category: "fuel", priceIndex: 0.95, quality: 3.9, source: "Carbu.com gemiddelde 09/2026", partner: false, note: "Gem. €0,08/l goedkoper", switchEffort: "low" },
+];
+
+/** Same-product prices (by EAN) from a price-comparison feed. Illustrative demo prices. */
+export interface ProductOffer {
+  id: string;
+  ean: string;
+  seller: string;
+  price: number;
+  /** Seller score 0-5. */
+  quality: number;
+  source: string;
+  partnerDeal?: string;
+  note: string;
+}
+
+export const PRODUCT_OFFERS: ProductOffer[] = [
+  { id: "p-coolblue-xm5", ean: "4548736000017", seller: "Coolblue", price: 329, quality: 4.6, source: "Prijsvergelijking 30/09/2026 (demo)", partnerDeal: "KBC-klantendeal: 2 jaar extra garantie", note: "Zelfde model en kleur, morgen geleverd, 30 dagen bedenktijd" },
+  { id: "p-bol-xm5", ean: "4548736000017", seller: "bol.com", price: 339, quality: 4.3, source: "Prijsvergelijking 30/09/2026 (demo)", note: "Verkocht door bol.com zelf" },
+  { id: "p-market-xm5", ean: "4548736000017", seller: "GadgetDeals (marktplaats)", price: 299, quality: 3.2, source: "Prijsvergelijking 30/09/2026 (demo)", note: "Derde verkoper, lage score" },
 ];
 
 export const OFFER_BY_ID = new Map(OFFERS.map((o) => [o.id, o]));

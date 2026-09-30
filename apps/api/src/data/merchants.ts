@@ -35,6 +35,7 @@ export const MERCHANTS: Merchant[] = [
   { id: "gabriels", name: "Gabriëls", category: "fuel", patterns: ["gabriels", "gabriëls"], quality: 3.9, priceIndex: 0.95 },
   // Fashion / leisure / other (context only — no switch suggestions)
   { id: "zalando", name: "Zalando", category: "fashion", patterns: ["zalando"], quality: 4.2 },
+  { id: "mediamarkt", name: "MediaMarkt", category: "electronics", patterns: ["mediamarkt", "media markt"], quality: 4.1 },
   { id: "bol", name: "bol.com", category: "leisure", patterns: ["bol.com"], quality: 4.3 },
   { id: "delijn", name: "De Lijn", category: "other", patterns: ["de lijn"], quality: 3.5 },
   { id: "bakkerij", name: "Bakkerij Van Hoof", category: "other", patterns: ["bakkerij"], quality: 4.6 },

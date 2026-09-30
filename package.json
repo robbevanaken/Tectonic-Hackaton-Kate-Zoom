@@ -1,8 +1,8 @@
 {
-  "name": "kate-switch",
+  "name": "kate-zoom",
   "private": true,
   "version": "0.1.0",
-  "description": "Kate Switch — KBC hackathon: spending-behaviour analysis that nudges customers to better deals at exactly the right moment.",
+  "description": "Kate Zoom — KBC hackathon: spending-behaviour analysis that nudges customers to better deals at exactly the right moment.",
   "workspaces": ["apps/*"],
   "scripts": {
     "dev": "concurrently -n api,web -c blue,cyan \"npm run dev -w apps/api\" \"npm run dev -w apps/web\"",

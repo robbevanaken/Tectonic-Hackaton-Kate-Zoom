@@ -1,7 +1,7 @@
 import { Home as HomeIcon, Sun, CreditCard } from "lucide-react";
 import { StatusBar } from "@/components/phone";
 import { KbcHeader, Chips, AccountCards, ShowPayments, ForYouCard, BottomNav, KateMark } from "@/components/kbc";
-import { eur } from "@/lib/format";
+import { eur, periodLabel } from "@/lib/format";
 import type { Insight } from "@/lib/api";
 
 export function HomeScreen({ name, top, onOpenSwitch, onOpenInsight, onSettings, hasPush }: { name: string; top: Insight | null; onOpenSwitch: () => void; onOpenInsight: (i: Insight) => void; onSettings: () => void; hasPush: boolean }) {
@@ -20,7 +20,7 @@ export function HomeScreen({ name, top, onOpenSwitch, onOpenInsight, onSettings,
         <div className="mt-3 flex flex-col gap-3 px-4">
           {top ? (
             <ForYouCard kate highlight icon={<KateMark size={30} />} onClick={() => onOpenInsight(top)}>
-              {top.whyNow} Bij {top.alternative?.provider ?? "een alternatief"} bespaar je zo'n <b>{eur(top.savingsYear)} per jaar</b> zonder in te boeten op kwaliteit.
+              {top.whyNow} Bij {top.alternative?.provider ?? "een alternatief"} bespaar je zo'n <b>{eur(top.savingsYear)} {periodLabel(top.period)}</b> zonder in te boeten op kwaliteit.
             </ForYouCard>
           ) : (
             <ForYouCard kate icon={<KateMark size={30} />} onClick={onOpenSwitch}>
