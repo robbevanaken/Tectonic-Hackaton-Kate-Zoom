@@ -39,9 +39,9 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
       </div>
 
       <div className="no-scrollbar min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-1">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#E6F4FB] text-kbc-blue"><CategoryIcon category={insight.category} size={24} /></span>
-          <h1 className="min-w-0 break-words pt-1 text-[21px] font-extrabold leading-tight text-kbc-navy">{insight.title}</h1>
+          <h1 className="min-w-0 break-words text-[21px] font-extrabold leading-tight text-kbc-navy">{insight.title}</h1>
         </div>
 
         <div className="mt-4 rounded-card bg-white p-4 shadow-card">

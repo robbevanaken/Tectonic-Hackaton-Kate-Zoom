@@ -44,7 +44,7 @@ export function HandoffConsent({ insight, onBack, onGo }: { insight: Insight; on
       </div>
 
       <div className="no-scrollbar min-w-0 flex-1 overflow-y-auto px-4 pb-8 pt-1">
-        <div className="flex items-start gap-3">
+        <div className="flex items-center gap-3">
           <KateMark size={40} className="shrink-0" />
           <div className="min-w-0">
             <h1 className="break-words text-[21px] font-extrabold leading-tight text-kbc-navy">Delen met {preview?.provider ?? insight.alternative?.provider}</h1>
