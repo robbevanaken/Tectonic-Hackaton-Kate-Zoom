@@ -38,7 +38,7 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
           <span className="truncate">{slug}.partner.demo/overstappen</span>
         </div>
       </div>
-      <div className="bg-[#FFF6E0] px-4 py-1.5 text-center text-[11px] font-bold text-[#8A6100]">Gesimuleerde aanbiederpagina (demo)</div>
+      <div className="bg-[#FFF6E0] px-4 py-1.5 text-center text-[11px] font-bold text-[#8A6100]">Demo · gesimuleerde aanbieder</div>
 
       <div className="no-scrollbar min-w-0 flex-1 overflow-y-auto px-5 pb-8 pt-5">
         {state === "loading" && <div className="text-[14px] text-kbc-muted">Laden…</div>}
@@ -47,7 +47,7 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
           <div className="mt-10 flex flex-col items-center text-center">
             <AlertTriangle size={40} className="text-[#C27C00]" />
             <h1 className="mt-3 text-[20px] font-extrabold text-kbc-text">Deze link is niet meer geldig</h1>
-            <p className="mt-1 text-[14px] text-kbc-muted">Links van Kate Zoom werken één keer en maximaal 10 minuten. Start opnieuw vanuit je KBC-app.</p>
+            <p className="mt-1 text-[14px] text-kbc-muted">Start opnieuw vanuit je KBC-app.</p>
             <button onClick={onClose} className="mt-6 h-12 rounded-full bg-kbc-navy px-6 text-[15px] font-bold text-white">Terug naar KBC</button>
           </div>
         )}
@@ -56,7 +56,7 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
           <div className="mt-10 flex flex-col items-center text-center">
             <CheckCircle2 size={48} className="text-kbc-green" />
             <h1 className="mt-3 text-[20px] font-extrabold text-kbc-text">Aanvraag ontvangen</h1>
-            <p className="mt-1 text-[14px] text-kbc-muted">{data?.provider} neemt contact met je op om te bevestigen. Je huidige contract stoppen ze voor jou.</p>
+            
             <button onClick={onSubmitted} className="mt-6 h-12 rounded-full bg-kbc-navy px-6 text-[15px] font-bold text-white">Terug naar KBC</button>
           </div>
         )}
@@ -67,7 +67,7 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
             <h1 className="mt-1 text-[22px] font-extrabold leading-tight text-kbc-text">{data.purpose}</h1>
             <div className="mt-3 flex items-start gap-2 rounded-[12px] bg-[#E6F4FB] p-3 text-[12px] leading-snug text-kbc-navy">
               <KateMark size={18} className="mt-0.5 shrink-0" />
-              <span className="min-w-0">{data.fields.length} velden zijn ingevuld via <b>Kate Zoom</b>. Controleer ze en pas aan waar nodig.</span>
+              <span className="min-w-0">Ingevuld via <b>Kate Zoom</b></span>
             </div>
             <form
               className="mt-4 flex flex-col gap-3"

@@ -27,6 +27,7 @@ export const MOMENT_LABEL: Record<string, string> = {
   better_deal: "Beter aanbod",
   return_window: "Retour nog mogelijk",
   price_drop: "Nu goedkoper",
+  budget_squeeze: "Eind van de maand",
 };
 
 export const periodLabel = (period: "year" | "once") => (period === "once" ? "eenmalig" : "per jaar");

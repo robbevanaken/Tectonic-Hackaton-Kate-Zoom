@@ -16,22 +16,22 @@ const cache = new Map<string, string>();
 
 export const kateEnabled = () => client !== null;
 
-const SYSTEM = `Je bent Kate, de digitale assistent van KBC. Je schrijft één korte, warme melding (max. 3 zinnen, Nederlands, jij-vorm) over een besparingskans.
+const SYSTEM = `Je bent Kate, de digitale assistent van KBC. Je schrijft één korte, warme zin (max. 20 woorden, Nederlands, jij-vorm) over een besparingskans. Het scherm toont al de prijzen en scores.
 Regels:
 - Gebruik uitsluitend de feiten in het bericht. Verzin geen cijfers, aanbieders of voorwaarden.
 - Begin met de reden waarom dit nu relevant is.
 - Geen druk, geen uitroeptekens, geen emoji, geen aanhef.
 - Als het aanbod een KBC-product is, zeg eerlijk dat het van KBC is.`;
 
-export async function explainWithKate(insight: Insight, firstName: string): Promise<{ text: string; source: "claude" | "template" }> {
+export async function explainWithKate(insight: Insight, _firstName: string): Promise<{ text: string; source: "claude" | "template" }> {
   const template = explainTemplate(insight);
   if (!client) return { text: template, source: "template" };
-  const key = `${firstName}:${insight.id}:${insight.savingsYear}`;
+  const key = `${insight.id}:${insight.savingsYear}:${insight.whyNow}`;
   const hit = cache.get(key);
   if (hit) return { text: hit, source: "claude" };
 
+  // Data minimisation: no name, no account data — only the aggregate facts of this tip.
   const facts = {
-    voornaam: firstName,
     categorie: insight.category,
     huidig: insight.current,
     alternatief: insight.alternative ?? null,

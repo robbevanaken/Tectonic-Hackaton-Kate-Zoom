@@ -6,23 +6,23 @@
 Every KBC customer already tells the bank, month after month, where their money goes. **Kate Zoom** turns that into a quiet, personal price-watch inside the KBC app:
 
 1. **Spot** — builds a recurring-spend profile from the customer's own transactions (energy, telecom, mobile, insurance, groceries, fuel, streaming) plus physical purchases from digital receipts.
-2. **Time it** — only nudges when there is a cheaper alternative of *comparable quality*, the saving is worth an interruption, and it is *the right moment*: the bill crept up, the contract turns one year, the debit just landed, winter is coming, subscriptions overlap, or a product you just bought is cheaper elsewhere while you can still return it.
+2. **Time it** — only nudges when there is a cheaper alternative of *comparable quality*, the saving is worth an interruption, and it is *the right moment*. Urgent moments (contract turns one year, debit just landed, product cheaper while you can still return it) push right away. Soft ones (price creep, season, overlapping subscriptions) wait for the customer's own end of month: the last 5 days before their payday, detected from their salary credits, when budgets are tight.
 3. **Switch in one tap** — Kate prefills the provider's sign-up page with exactly the fields the customer approves, via a single-use 10-minute link. The provider never sees balances or spending.
-4. **Grow it** — everything Kate Zoom saved is tracked and can be invested in a KBC risk profile, with a live projection of what it grows to.
+4. **Grow it** — everything Kate Zoom saved is tracked and can be invested, managed by KBC per risk profile or self-directed in ETFs via Bolero, with a live projection of what it grows to.
 
 Partners can offer exclusive **KBC-klantendeals**, shown transparently but excluded from the ranking, so the comparison stays on price and quality.
 
 | | | | |
 |---|---|---|---|
 | ![](docs/screenshots/01-home-push.jpg) | ![](docs/screenshots/02-insight-detail.jpg) | ![](docs/screenshots/03-share-consent.jpg) | ![](docs/screenshots/04-provider-prefilled.jpg) |
-| ![](docs/screenshots/05-overview-savings.jpg) | ![](docs/screenshots/06-invest.jpg) | ![](docs/screenshots/07-purchase-tip.jpg) | |
+| ![](docs/screenshots/05-overview-savings.jpg) | ![](docs/screenshots/06-invest.jpg) | ![](docs/screenshots/07-purchase-tip.jpg) | ![](docs/screenshots/08-settings-organic-timing.jpg) |
 
 ## Run it
 
 ```bash
 npm install
 npm run dev          # API on :4000, KBC-styled app on http://localhost:5180
-npm test             # 12 engine tests (node:test)
+npm test             # 16 tests (node:test)
 ```
 
 The step-by-step demo script is in **[DEMO.md](DEMO.md)**. Submission text and video script are in [docs/SUBMISSION.md](docs/SUBMISSION.md).
@@ -54,16 +54,18 @@ offers / product prices ─► bestAlternative (quality parity) ────┴�
 | `moments.ts` | Timing signals: `price_creep`, `contract_window`, `post_debit`, `seasonal`, `overlap`. |
 | `purchases.ts` | Same EAN cheaper at a seller with score ≥ 4.0, only inside the receipt's return window. |
 | `match.ts` | Best cheaper alternative with quality parity (`quality ≥ current − 0.3`). Partner offers and deals get no ranking boost (tested). |
-| `insights.ts` | `relevance = min(1, saving/500) × confidence × (1 + Σ moment weights)` and `pickNotification()`: ≥ €50, 1 push per 7 days, **no moment → no push**, honours snooze/dismiss. |
+| `budget.ts` | Payday from the customer's salary credits; the last 5 days before payday are the budget-squeeze window. |
+| `insights.ts` | `relevance = min(1, saving/500) × confidence × (1 + Σ moment weights)` and `pickNotification()`: ≥ €50, 1 push per 7 days, **no moment → no push**, urgent moments any day, soft ones only in the squeeze window, honours snooze/dismiss. |
+| `privacy.ts` | Consent withdrawal erases Kate data and revokes links; GDPR export. |
 | `handoff.ts` | Per-category prefill (EAN code, Easy Switch-ID, licence plate…), required vs optional fields, single-use 10-minute tokens. |
-| `savings.ts` | Ledger of realised savings, run rate, and a monthly-compounding projection for three risk profiles. |
+| `savings.ts` | Ledger of realised savings, run rate, KBC profiles and Bolero ETFs, monthly-compounding projection. |
 | `explain.ts` / `kate.ts` | Deterministic Kate copy; optional Claude rewrite with a facts-only prompt and template fallback. |
 
 REST API (`apps/api/src/routes/`), all `/api/me` routes scoped to the bearer token's own customer:
 
 | Route | Purpose |
 |---|---|
-| `GET /api/me` · `POST /api/me/consent` | Profile, opt-in toggle (everything below returns 403 without consent) |
+| `GET /api/me` · `POST /api/me/consent` · `GET /api/me/export` | Profile, opt-in toggle (off = erase), GDPR export. Everything below returns 403 without consent |
 | `GET /api/me/spending` · `GET /api/me/insights` | Category breakdown, ranked and explained tips |
 | `GET /api/me/notification` · `POST /api/me/notification/delivered` | The one push Kate would send now and why, cooldown |
 | `POST /api/me/insights/:id/feedback` | `accept` / `snooze` / `dismiss`; accept adds to the savings ledger |
@@ -71,15 +73,15 @@ REST API (`apps/api/src/routes/`), all `/api/me` routes scoped to the bearer tok
 | `POST /api/handoff/redeem` | Provider side: redeem the token once (410 when used or expired) |
 | `GET /api/me/savings` · `POST /api/me/invest/projection` · `POST /api/me/invest` | Savings ledger, projection, start plan (capped at what Kate actually saved) |
 
-`apps/web/` — React + Tailwind mock of the KBC Mobile app (Kate search bar, account cards, "Voor jou" feed, bottom nav) with the Kate Zoom module: push, overview, detail, consent, simulated provider page, invest.
+`apps/web/` — React + Tailwind mock of the KBC Mobile app (Kate search bar, account cards, "Voor jou" feed, bottom nav) with the Kate Zoom module: push, overview, detail, consent, simulated provider page, invest. Every button works; parts of the KBC app outside this demo open a page that says so and links back to Kate Zoom.
 
 ## Business model
 
 Customers save without comparing or filling in forms. KBC gets engagement and new recurring investment inflow. Partners (energy, telecom, retail) offer exclusive discounts to KBC customers and pay per switch; a prefilled, consented lead converts far better than an ad. Neutrality is a hard rule: deals are shown but never change the ranking.
 
-## Security
+## Security and legal
 
-See [SECURITY.md](SECURITY.md): bearer-scoped routes (no ids in URLs), consent gate, zod validation, helmet + CSP, rate limiting, single-use handoff tokens with field-level consent, data minimisation towards providers and the LLM, no secrets in the repo, 0 `npm audit` findings.
+See [SECURITY.md](SECURITY.md) and [docs/LEGAL.md](docs/LEGAL.md) (GDPR, MiFID II, consumer law, AI Act). In short: bearer-scoped routes (no ids in URLs), consent gate, zod validation, helmet + CSP, rate limiting, single-use handoff tokens with field-level consent, data minimisation towards providers and the LLM, no secrets in the repo, demo logins disabled in production, CI with CodeQL and SHA-pinned actions, Dependabot, 0 `npm audit` findings.
 
 ## Repo layout
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ArrowDown, ArrowRight, Clock, ThumbsDown, ShieldCheck, ChevronDown, Receipt } from "lucide-react";
+import { ChevronLeft, ArrowDown, ArrowRight, Clock, ThumbsDown, ShieldCheck, ChevronDown, Gift } from "lucide-react";
 import { StatusBar } from "@/components/phone";
 import { KateMark } from "@/components/kbc";
 import { CategoryIcon, MomentPill, Quality, MiniBars } from "@/components/insight-bits";
@@ -55,16 +55,6 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
           </div>
         </div>
 
-        {insight.product && (
-          <div className="mt-3 flex items-center gap-3 rounded-card bg-white p-4 shadow-card">
-            <Receipt size={20} className="shrink-0 text-kbc-blue" />
-            <div className="min-w-0 text-[13px] text-kbc-text">
-              <div className="font-extrabold">{insight.product}</div>
-              <div className="text-kbc-muted">Digitaal kasticket · {insight.current.name} · {eur(insight.current.monthly, 2)}</div>
-            </div>
-          </div>
-        )}
-
         {a && (
           <div className="mt-3 overflow-hidden rounded-card bg-white shadow-card">
             <div className="flex flex-col gap-2 p-4">
@@ -74,9 +64,9 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
             </div>
             <div className="border-t border-kbc-bg px-4 py-3 text-[13px] leading-snug text-kbc-text">
               <div>{a.note}</div>
-              <div className="mt-1 text-kbc-muted">{insight.kind === "purchase" ? "Prijs" : "Kwaliteitsscore"}: {a.source}</div>
-              {a.partnerDeal && <div className="mt-2 rounded-[10px] bg-[#E6F4FB] px-3 py-2 font-bold text-kbc-navy">{a.partnerDeal}<span className="block text-[11px] font-normal text-kbc-muted">Onderhandeld door KBC. Telt niet mee in de vergelijking: de keuze blijft op prijs en kwaliteit.</span></div>}
-              {a.partner && <div className="mt-2 flex items-start gap-1.5 font-bold text-kbc-navy"><ShieldCheck size={15} className="mt-0.5 shrink-0" /><span>KBC-product, getoond omdat het op prijs én kwaliteit wint</span></div>}
+              <div className="mt-1 text-[12px] text-kbc-muted">Bron: {a.source}</div>
+              {a.partnerDeal && <div className="mt-2 rounded-[10px] bg-[#E6F4FB] px-3 py-2 font-bold text-kbc-navy"><span className="flex items-start gap-1.5"><Gift size={15} className="mt-0.5 shrink-0" />{a.partnerDeal.replace("KBC-klantendeal: ", "")}</span><span className="block text-[11px] font-normal text-kbc-muted">KBC-partnerdeal · niet meegeteld in de vergelijking</span></div>}
+              {a.partner && <div className="mt-2 flex items-start gap-1.5 font-bold text-kbc-navy"><ShieldCheck size={15} className="mt-0.5 shrink-0" /><span>KBC-product</span></div>}
             </div>
             <div className="flex items-center justify-between gap-3 bg-[#E9F7EE] px-4 py-3">
               <span className="text-[14px] font-bold text-kbc-text">Besparing</span>
@@ -103,29 +93,24 @@ export function InsightDetail({ insight, onBack, onFeedback, onHandoff, busy }: 
         {why && (
           <div className="mt-2 rounded-card bg-white p-4 text-[13px] leading-relaxed text-kbc-text shadow-card">
             <ul className="list-disc space-y-1 pl-4">
-              <li>
-                Gebaseerd op <b>{insight.dataPoints} {insight.dataPoints === 1 ? "betaling" : "betalingen"}</b> aan {insight.current.name}
-                {insight.kind === "purchase" ? " en je digitale kasticket" : ""} op je KBC-rekening. Niets verlaat KBC.
-              </li>
-              <li>Zekerheid: <b>{Math.round(insight.confidence * 100)}%</b>, {insight.confidence >= 0.85 ? "exact te vergelijken." : "een schatting: je gebruik of dekking kan verschillen."}</li>
+              <li>{insight.dataPoints} {insight.dataPoints === 1 ? "betaling" : "betalingen"} aan {insight.current.name}{insight.kind === "purchase" ? " + kasticket" : ""}</li>
+              <li>Zekerheid {Math.round(insight.confidence * 100)}%</li>
               {insight.moments.map((m) => <li key={m.type}>{m.reason}</li>)}
-              <li>Alternatieven met een duidelijk lagere kwaliteitsscore toon ik nooit, ook al zijn ze goedkoper.</li>
-              <li>Max. 1 melding per week. Je kan Kate Zoom altijd uitzetten in Instellingen.</li>
-              <li className="text-kbc-muted">Tekst door {insight.explanationSource === "claude" ? "Kate (Claude), enkel op basis van bovenstaande feiten" : "Kate (sjabloon)"}.</li>
+              <li>Nooit goedkoper maar slechter</li>
+              <li className="text-kbc-muted">{insight.explanationSource === "claude" ? "Tekst door AI (Claude)" : "Automatische tekst"}</li>
             </ul>
           </div>
         )}
 
         {done ? (
           <div className="mt-5 rounded-card bg-white p-4 text-center text-[14px] font-bold text-kbc-muted shadow-card">
-            {insight.status === "accepted" ? "Aanvraag gestart. Kate volgt de nieuwe prijs op." : insight.status === "snoozed" ? "Ik herinner je er over 30 dagen aan." : "Oké, ik laat dit rusten."}
+            {insight.status === "accepted" ? "✓ Aangevraagd" : insight.status === "snoozed" ? "Herinnering over 30 dagen" : "Verborgen"}
           </div>
         ) : (
           <div className="mt-5 flex flex-col gap-2">
             <button disabled={busy} onClick={insight.kind === "overlap" ? () => onFeedback("accept") : onHandoff} className="flex min-h-14 items-center justify-center gap-2 rounded-full bg-kbc-blue px-5 py-3 text-center text-[16px] font-extrabold leading-tight text-white shadow-card disabled:opacity-60">
               <span className="min-w-0">{cta}</span> <ArrowRight size={18} className="shrink-0" />
             </button>
-            {insight.kind !== "overlap" && <div className="px-4 text-center text-[12px] text-kbc-muted">Kate vult je gegevens alvast in. Je kiest zelf wat je deelt.</div>}
             <div className="flex gap-2">
               <button disabled={busy} onClick={() => onFeedback("snooze")} className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-white px-3 text-[14px] font-bold text-kbc-navy shadow-card disabled:opacity-60"><Clock size={16} className="shrink-0" /> Later</button>
               <button disabled={busy} onClick={() => onFeedback("dismiss")} className="flex h-12 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-white px-3 text-[14px] font-bold text-kbc-navy shadow-card disabled:opacity-60"><ThumbsDown size={16} className="shrink-0" /> <span className="truncate">Niet interessant</span></button>

@@ -62,7 +62,7 @@ function noise(b: Builder, start: Date) {
 function thomas(): Customer {
   const b: Builder = { tx: [], rand: rng(42), seq: 0 };
   const start = new Date("2025-08-01");
-  monthly(b, start, 27, "Payroll Novatek NV", "Loon", () => -3240); // credit
+  monthly(b, start, 1, "Payroll Novatek NV", "Loon", () => -3240); // credit
   // Energy: price creep — 142 → 148 → 168 (+18% vs first months)
   monthly(b, start, 5, "Engie Electrabel", "Domiciliëring energie", (i) => (i < 5 ? 142 : i < 11 ? 148 : 168));
   // Telecom: started 28/10/2025 → ~11 months at AS_OF (contract window) and debited 2 days ago (post-debit)

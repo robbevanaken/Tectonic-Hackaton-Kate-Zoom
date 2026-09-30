@@ -5,6 +5,7 @@ import { detectMoments } from "./moments.js";
 import { bestAlternative } from "./match.js";
 import { explainTemplate } from "./explain.js";
 import { purchaseMatches } from "./purchases.js";
+import { budgetCycle, squeezeMoment, type BudgetCycle } from "./budget.js";
 import { MERCHANT_BY_ID } from "../data/merchants.js";
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -32,7 +33,7 @@ function relevance(savingsYear: number, confidence: number, moments: Moment[]): 
 }
 
 function whyNow(moments: Moment[]): string {
-  if (moments.length === 0) return "Geen dringende reden, maar het loont wel.";
+  if (moments.length === 0) return "Goedkoper, zelfde kwaliteit.";
   return [...moments].sort((a, b) => b.weight - a.weight)[0].reason;
 }
 
@@ -94,7 +95,7 @@ function overlapInsight(all: RecurringSpend[], asOf: string, feedback: Feedback[
     id,
     kind: "overlap",
     category: "streaming",
-    title: `${streaming.length} streamingdiensten tegelijk`,
+    title: `${streaming.length} streamingdiensten`,
     current: { name: streaming.map((s) => s.merchantName).join(", "), monthly: total, quality: 0 },
     savingsMonth,
     savingsYear,
@@ -116,7 +117,11 @@ function overlapInsight(all: RecurringSpend[], asOf: string, feedback: Feedback[
 export interface Analysis {
   recurring: RecurringSpend[];
   insights: Insight[];
+  cycle: BudgetCycle;
 }
+
+/** Moments that are time-bound: the chance is gone if we wait. These may push any day. */
+export const URGENT_MOMENTS = new Set(["contract_window", "post_debit", "return_window"]);
 
 /** Full pipeline for one customer. Pure: same input + asOf → same output. */
 export function analyze(customer: Customer, asOf: string): Analysis {
@@ -137,7 +142,7 @@ export function analyze(customer: Customer, asOf: string): Analysis {
       id,
       kind: "purchase",
       category: "electronics",
-      title: `${m.receipt.product.split(" (")[0]}: ${m.offer.seller} is goedkoper`,
+      title: m.receipt.product.split(" (")[0],
       product: m.receipt.product,
       current: { name: shop, monthly: m.receipt.price, quality: MERCHANT_BY_ID.get(m.receipt.merchantId)?.quality ?? 0 },
       alternative: { offerId: m.offer.id, provider: m.offer.seller, monthly: m.offer.price, quality: m.offer.quality, source: m.offer.source, partner: false, partnerDeal: m.offer.partnerDeal, note: m.offer.note, switchEffort: "low" },
@@ -157,8 +162,19 @@ export function analyze(customer: Customer, asOf: string): Analysis {
     insight.explanation = explainTemplate(insight);
     insights.push(insight);
   }
+  // Organic timing: in the last days before payday every tip gets the budget moment.
+  const cycle = budgetCycle(txs, asOf);
+  const squeeze = squeezeMoment(cycle);
+  if (squeeze) {
+    for (const i of insights) {
+      i.moments.push(squeeze);
+      i.relevance = relevance(i.savingsYear, i.confidence, i.moments);
+      i.whyNow = whyNow(i.moments);
+      i.explanation = explainTemplate(i);
+    }
+  }
   insights.sort((a, b) => b.relevance - a.relevance);
-  return { recurring, insights };
+  return { recurring, insights, cycle };
 }
 
 export interface NotificationDecision {
@@ -171,22 +187,31 @@ export interface NotificationDecision {
  *  - only insights the customer hasn't snoozed/dismissed/accepted
  *  - only when the saving is worth an interruption
  *  - only with a live timing moment (no moment → no push, the tip waits in the module)
+ *  - organic delivery: urgent moments (contract window, just debited, return window) push any day;
+ *    soft ones (price creep, season, overlap) wait for the customer's own end of month (payday − 5 days)
  *  - at most one push per week, never the same insight twice
  */
-export function pickNotification(insights: Insight[], customer: Customer, asOf: string): NotificationDecision {
+export function pickNotification(insights: Insight[], customer: Customer, asOf: string, cycle: BudgetCycle = budgetCycle(categorize(customer.transactions), asOf)): NotificationDecision {
   const last = customer.notified[customer.notified.length - 1];
   if (last) {
     const days = (Date.parse(asOf) - Date.parse(last.at)) / 86_400_000;
-    if (days < PUSH_COOLDOWN_DAYS) return { insight: null, reason: `Laatste melding ${Math.round(days)} dagen geleden; max. 1 per ${PUSH_COOLDOWN_DAYS} dagen.` };
+    if (days < PUSH_COOLDOWN_DAYS) return { insight: null, reason: `Deze week al een melding gestuurd.` };
   }
   const alreadySent = new Set(customer.notified.map((n) => n.insightId));
   const eligible = insights.filter((i) => i.status === "new" && i.savingsYear >= MIN_SAVINGS_YEAR_FOR_PUSH && !alreadySent.has(i.id));
-  if (eligible.length === 0) return { insight: null, reason: "Geen tip die een melding waard is." };
+  if (eligible.length === 0) return { insight: null, reason: "Geen melding nodig." };
   // No moment, no push: tips without a timing signal wait in the module until one appears
   // (a debit, a contract date, a price change) — that is what "the right moment" means.
   const withMoment = eligible.filter((i) => i.moments.length > 0);
-  if (withMoment.length === 0) return { insight: null, reason: "Er is een tip, maar geen goed moment; ik wacht op bv. een afschrijving of contractdatum." };
-  withMoment.sort((a, b) => b.relevance - a.relevance);
-  const pick = withMoment[0];
-  return { insight: pick, reason: `Timing: ${pick.whyNow}` };
+  if (withMoment.length === 0) return { insight: null, reason: "Tip wacht op een goed moment." };
+  const urgent = (i: Insight) => i.moments.some((m) => URGENT_MOMENTS.has(m.type));
+  const pool = cycle.inSqueeze ? withMoment : withMoment.filter(urgent);
+  if (pool.length === 0) {
+    const wait = cycle.daysToPayday !== null ? ` over ${Math.max(0, cycle.daysToPayday - 5)} dagen` : " eind van de maand";
+    return { insight: null, reason: `Stil. Volgende melding${wait}.` };
+  }
+  pool.sort((a, b) => b.relevance - a.relevance);
+  const pick = pool[0];
+  const why = cycle.inSqueeze && !urgent(pick) ? `Eind van je maand. ${pick.moments.find((m) => m.type === "budget_squeeze")!.reason}` : `Dringend. ${pick.moments.filter((m) => URGENT_MOMENTS.has(m.type))[0]?.reason ?? pick.whyNow}`;
+  return { insight: pick, reason: why };
 }

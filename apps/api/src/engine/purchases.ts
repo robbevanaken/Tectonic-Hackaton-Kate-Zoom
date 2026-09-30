@@ -32,15 +32,14 @@ export function purchaseMatches(customer: Customer, asOf: string, offers: Produc
       .sort((a, b) => a.price - b.price)[0];
     if (!best) continue;
     const saving = Math.round((r.price - best.price) * 100) / 100;
-    const shop = MERCHANT_BY_ID.get(r.merchantId)?.name ?? "de winkel";
     out.push({
       receipt: r,
       offer: best,
       saving,
       daysLeft,
       moments: [
-        { type: "return_window", weight: daysLeft <= 10 ? 0.5 : 0.3, reason: `Je kocht dit ${daysSince} dagen geleden bij ${shop}; je retourtermijn loopt nog ${daysLeft} dagen.` },
-        { type: "price_drop", weight: 0.2, reason: `Hetzelfde toestel (zelfde EAN) kost nu € ${saving.toFixed(0)} minder bij ${best.seller}.` },
+        { type: "return_window", weight: daysLeft <= 10 ? 0.5 : 0.3, reason: `Gekocht ${daysSince} dagen geleden, nog ${daysLeft} dagen retour.` },
+        { type: "price_drop", weight: 0.2, reason: `Nu € ${saving.toFixed(0)} goedkoper bij ${best.seller}.` },
       ],
     });
   }

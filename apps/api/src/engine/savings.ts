@@ -10,17 +10,45 @@ export interface SavingEntry {
   period: "year" | "once";
 }
 
-export type RiskProfile = "defensief" | "gebalanceerd" | "dynamisch";
+export type Platform = "kbc" | "bolero";
 
-/** Illustrative long-term expected yearly returns. Not a promise; shown with a risk disclaimer. */
-export const PROFILES: Record<RiskProfile, { label: string; expectedReturn: number; risk: string }> = {
-  defensief: { label: "Defensief", expectedReturn: 0.03, risk: "Laag risico, vooral obligaties" },
-  gebalanceerd: { label: "Gebalanceerd", expectedReturn: 0.05, risk: "Mix van aandelen en obligaties" },
-  dynamisch: { label: "Dynamisch", expectedReturn: 0.07, risk: "Vooral aandelen, grotere schommelingen" },
+export interface InvestOption {
+  label: string;
+  /** Illustrative long-term expected yearly return. Not a promise; shown with a risk disclaimer. */
+  expectedReturn: number;
+  risk: string;
+}
+
+/**
+ * Two ways to invest the savings, both inside the KBC group:
+ * KBC (managed, by risk profile) or Bolero (self-directed, e.g. ETFs).
+ */
+export const PLATFORMS: Record<Platform, { label: string; tagline: string; options: Record<string, InvestOption> }> = {
+  kbc: {
+    label: "KBC",
+    tagline: "KBC beheert je portefeuille volgens je profiel",
+    options: {
+      defensief: { label: "Defensief", expectedReturn: 0.03, risk: "Laag risico, vooral obligaties" },
+      gebalanceerd: { label: "Gebalanceerd", expectedReturn: 0.05, risk: "Mix van aandelen en obligaties" },
+      dynamisch: { label: "Dynamisch", expectedReturn: 0.07, risk: "Vooral aandelen, grotere schommelingen" },
+    },
+  },
+  bolero: {
+    label: "Bolero",
+    tagline: "Je belegt zelf via Bolero, met lage kosten",
+    options: {
+      obligaties: { label: "Obligatie-ETF", expectedReturn: 0.03, risk: "Breed mandje obligaties, lage kosten" },
+      mix: { label: "Mix-ETF", expectedReturn: 0.05, risk: "Aandelen en obligaties in één tracker" },
+      wereld: { label: "Wereld-ETF", expectedReturn: 0.07, risk: "Duizenden aandelen wereldwijd, schommelt meer" },
+    },
+  },
 };
 
+export const optionFor = (platform: Platform, option: string): InvestOption | null => PLATFORMS[platform]?.options[option] ?? null;
+
 export interface InvestPlan {
-  profile: RiskProfile;
+  platform: Platform;
+  option: string;
   lump: number;
   monthly: number;
   years: number;

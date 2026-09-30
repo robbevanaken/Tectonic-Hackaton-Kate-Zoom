@@ -1,4 +1,4 @@
-import { Zap, Wifi, Smartphone, Tv, Shield, ShoppingCart, Fuel, Shirt, Coffee, MoreHorizontal, TrendingUp, CalendarClock, Receipt, Copy, Snowflake, Sparkles, Star, Headphones, Undo2, TrendingDown } from "lucide-react";
+import { Zap, Wifi, Smartphone, Tv, Shield, ShoppingCart, Fuel, Shirt, Coffee, MoreHorizontal, TrendingUp, CalendarClock, Receipt, Copy, Snowflake, Sparkles, Star, Headphones, Undo2, TrendingDown, Wallet } from "lucide-react";
 import type { MonthTotal } from "@/lib/api";
 import { MOMENT_LABEL, score } from "@/lib/format";
 
@@ -12,7 +12,7 @@ export function CategoryIcon({ category, size = 22, className = "" }: { category
 }
 
 const MOMENT_ICON: Record<string, typeof Zap> = {
-  price_creep: TrendingUp, contract_window: CalendarClock, post_debit: Receipt, overlap: Copy, seasonal: Snowflake, better_deal: Sparkles, return_window: Undo2, price_drop: TrendingDown,
+  price_creep: TrendingUp, contract_window: CalendarClock, post_debit: Receipt, overlap: Copy, seasonal: Snowflake, better_deal: Sparkles, return_window: Undo2, price_drop: TrendingDown, budget_squeeze: Wallet,
 };
 
 export function MomentPill({ type, strong }: { type: string; strong?: boolean }) {

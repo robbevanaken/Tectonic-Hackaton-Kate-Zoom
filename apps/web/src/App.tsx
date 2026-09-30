@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { PhoneFrame } from "@/components/phone";
 import { Push } from "@/components/push";
 import { HomeScreen } from "@/screens/home";
@@ -8,6 +8,8 @@ import { SettingsScreen } from "@/screens/settings";
 import { HandoffConsent } from "@/screens/handoff-consent";
 import { ProviderPage } from "@/screens/provider-page";
 import { InvestScreen } from "@/screens/invest";
+import { PlaceholderScreen } from "@/screens/placeholder";
+import { NavContext, type Nav } from "@/lib/nav";
 import { api, ApiError, getPersona, setPersona, PERSONAS, type Insight, type Me, type Savings, type Spending } from "@/lib/api";
 
 type Screen =
@@ -17,6 +19,7 @@ type Screen =
   | { name: "handoff"; id: string }
   | { name: "provider"; id: string; token: string }
   | { name: "invest" }
+  | { name: "placeholder"; title: string; from: Screen }
   | { name: "settings" };
 
 export default function App() {
@@ -74,6 +77,19 @@ export default function App() {
     setPush(null);
   };
 
+  const closePush = useCallback(() => setPush(null), []);
+
+  const nav: Nav = useMemo(
+    () => ({
+      home: () => setScreen({ name: "home" }),
+      zoom: () => setScreen({ name: "switch" }),
+      invest: () => setScreen({ name: "invest" }),
+      settings: () => setScreen({ name: "settings" }),
+      demo: (title: string) => setScreen((from) => ({ name: "placeholder", title, from })),
+    }),
+    [],
+  );
+
   const openInsight = (i: Insight) => setScreen({ name: "insight", id: i.id });
 
   const openPush = async () => {
@@ -99,6 +115,13 @@ export default function App() {
     await load(false);
   };
 
+  const demoDate = async (date: string) => {
+    await api.demoDate(date);
+    setPush(null);
+    setScreen({ name: "home" });
+    await load(true);
+  };
+
   const reset = async () => {
     await api.reset();
     setScreen({ name: "home" });
@@ -109,11 +132,17 @@ export default function App() {
   const current = "id" in screen ? insights.find((i) => i.id === screen.id) ?? null : null;
 
   return (
+    <NavContext.Provider value={nav}>
     <PhoneFrame>
       {error && <div className="absolute inset-x-4 top-14 z-50 rounded-card bg-kbc-red px-4 py-3 text-[13px] font-bold text-white">{error}</div>}
-      <Push insight={push} onOpen={openPush} onClose={() => setPush(null)} />
+      <Push
+        insight={push}
+        lead={pushReason.startsWith("Eind van je maand.") && me?.daysToPayday ? (me.daysToPayday === 1 ? "Morgen komt je loon." : `Nog ${me.daysToPayday} dagen tot je loon.`) : undefined}
+        onOpen={openPush}
+        onClose={closePush}
+      />
       {screen.name === "home" && (
-        <HomeScreen name={me?.name ?? ""} top={top} hasPush={!!push} onOpenSwitch={() => setScreen({ name: "switch" })} onOpenInsight={openInsight} onSettings={() => setScreen({ name: "settings" })} />
+        <HomeScreen name={me?.name ?? ""} off={me ? !me.consent : false} top={top} hasPush={!!push} onOpenSwitch={() => setScreen({ name: "switch" })} onOpenInsight={openInsight} onSettings={() => setScreen({ name: "settings" })} />
       )}
       {screen.name === "switch" && (
         <ZoomOverview firstName={me?.firstName ?? ""} insights={insights} spending={spending} savings={savings} onBack={() => setScreen({ name: "home" })} onOpen={openInsight} onSettings={() => setScreen({ name: "settings" })} onInvest={() => setScreen({ name: "invest" })} />
@@ -141,8 +170,11 @@ export default function App() {
         <InvestScreen savings={savings} onBack={() => setScreen({ name: "switch" })} onStarted={() => void load(false)} />
       )}
       {screen.name === "settings" && (
-        <SettingsScreen me={me} persona={persona} onPersona={changePersona} onConsent={consent} onReset={reset} onBack={() => setScreen({ name: "home" })} notificationReason={pushReason} />
+        <SettingsScreen me={me} persona={persona} onPersona={changePersona} onConsent={consent} onReset={reset} onDemoDate={demoDate} onBack={() => setScreen({ name: "home" })} notificationReason={pushReason} />
       )}
+      {screen.name === "placeholder" && <PlaceholderScreen title={screen.title} onBack={() => setScreen(screen.from)} onZoom={() => setScreen({ name: "switch" })} />}
+      {screen.name === "invest" && !savings && <PlaceholderScreen title="Beleggen" onBack={() => setScreen({ name: "home" })} onZoom={() => setScreen({ name: "switch" })} />}
     </PhoneFrame>
+    </NavContext.Provider>
   );
 }

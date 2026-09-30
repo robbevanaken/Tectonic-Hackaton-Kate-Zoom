@@ -94,7 +94,8 @@ export type MomentType =
   | "seasonal"
   | "better_deal"
   | "return_window"
-  | "price_drop";
+  | "price_drop"
+  | "budget_squeeze";
 
 export interface Moment {
   type: MomentType;
@@ -193,6 +194,8 @@ export interface Customer {
   /** Savings realised through Kate Zoom (accepted tips). */
   savings: SavingEntry[];
   investPlan?: InvestPlan;
+  /** Demo only: pretend "today" is this date (YYYY-MM-DD). */
+  demoDate?: string;
   feedback: Feedback[];
   /** Dates (YYYY-MM-DD) on which a push notification was sent. */
   notified: { insightId: string; at: string }[];

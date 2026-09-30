@@ -20,6 +20,7 @@ export interface Handoff {
   provider: string;
   purpose: string;
   insightId: string;
+  customerId: string;
   fields: HandoffField[];
   expiresAt: number;
   used: boolean;
@@ -83,6 +84,7 @@ export function previewHandoff(customer: Customer, insight: Insight): HandoffPre
 
 /** Create a single-use token carrying only the fields the customer approved. Required fields cannot be dropped. */
 export function createHandoff(customer: Customer, insight: Insight, approvedKeys: string[], now = Date.now()): Handoff | { error: string } {
+  purgeExpired(now);
   const preview = previewHandoff(customer, insight);
   if (!preview) return { error: "no_handoff" };
   const approved = new Set(approvedKeys);
@@ -93,12 +95,23 @@ export function createHandoff(customer: Customer, insight: Insight, approvedKeys
     provider: preview.provider,
     purpose: preview.purpose,
     insightId: insight.id,
+    customerId: customer.id,
     fields: preview.fields.filter((f) => approved.has(f.key)),
     expiresAt: now + HANDOFF_TTL_MS,
     used: false,
   };
   handoffs.set(handoff.token, handoff);
   return handoff;
+}
+
+/** Consent withdrawn → every open link for this customer stops working. */
+export function revokeHandoffsFor(customerId: string): void {
+  for (const [token, h] of handoffs) if (h.customerId === customerId) handoffs.delete(token);
+}
+
+/** Housekeeping: drop expired tokens so the map can't grow unbounded. */
+export function purgeExpired(now = Date.now()): void {
+  for (const [token, h] of handoffs) if (now > h.expiresAt) handoffs.delete(token);
 }
 
 /** Provider side: redeem the token once. Expired or reused tokens return null. */

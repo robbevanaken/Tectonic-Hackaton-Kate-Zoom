@@ -47,8 +47,7 @@ export function HandoffConsent({ insight, onBack, onGo }: { insight: Insight; on
         <div className="flex items-start gap-3">
           <KateMark size={40} className="shrink-0" />
           <div className="min-w-0">
-            <h1 className="break-words text-[21px] font-extrabold leading-tight text-kbc-navy">Ik vul alles al in bij {preview?.provider ?? insight.alternative?.provider}</h1>
-            <p className="mt-1 text-[14px] leading-snug text-kbc-muted">{preview?.purpose}. Kies wat je deelt; de rest typ je zelf.</p>
+            <h1 className="break-words text-[21px] font-extrabold leading-tight text-kbc-navy">Delen met {preview?.provider ?? insight.alternative?.provider}</h1>
           </div>
         </div>
 
@@ -67,7 +66,7 @@ export function HandoffConsent({ insight, onBack, onGo }: { insight: Insight; on
                   {on && <Check size={14} strokeWidth={3} />}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-[12px] font-bold text-kbc-muted">{f.label}{f.required ? " · nodig" : " · optioneel"}</span>
+                  <span className="flex items-center gap-1 text-[12px] font-bold text-kbc-muted">{f.label}{f.required && <Lock size={11} className="shrink-0" aria-label="verplicht" />}</span>
                   <span className="block break-words text-[15px] font-bold text-kbc-text">{f.value}</span>
                 </span>
               </button>
@@ -75,10 +74,9 @@ export function HandoffConsent({ insight, onBack, onGo }: { insight: Insight; on
           })}
         </div>
 
-        <div className="mt-3 space-y-2 rounded-card bg-white p-4 text-[12px] leading-snug text-kbc-muted shadow-card">
-          <div className="flex items-start gap-2"><EyeOff size={15} className="mt-0.5 shrink-0 text-kbc-navy" /><span>{preview?.provider ?? "De aanbieder"} ziet <b className="text-kbc-text">niets</b> van je rekeningen, saldo of uitgaven. Alleen wat hierboven aangevinkt staat.</span></div>
-          <div className="flex items-start gap-2"><Timer size={15} className="mt-0.5 shrink-0 text-kbc-navy" /><span>De link is 10 minuten geldig en werkt maar één keer.</span></div>
-          <div className="flex items-start gap-2"><Lock size={15} className="mt-0.5 shrink-0 text-kbc-navy" /><span>Je tekent pas bij {preview?.provider ?? "de aanbieder"} zelf. Kate beslist niets in jouw plaats.</span></div>
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 px-1 text-[12px] font-bold text-kbc-muted">
+          <span className="flex items-center gap-1.5"><EyeOff size={14} className="shrink-0 text-kbc-navy" />Geen saldo of uitgaven</span>
+          <span className="flex items-center gap-1.5"><Timer size={14} className="shrink-0 text-kbc-navy" />Link 1× · 10 min</span>
         </div>
 
         {error && <div className="mt-3 rounded-card bg-[#FDECEA] p-3 text-[13px] font-bold text-kbc-red">{error}</div>}

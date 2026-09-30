@@ -21,22 +21,23 @@ export interface Insight {
   byMonth: MonthTotal[];
   status: "new" | "snoozed" | "dismissed" | "accepted";
 }
-export interface Me { id: string; name: string; firstName: string; consent: boolean; asOf: string; kate: "claude" | "template" }
+export interface Me { id: string; name: string; firstName: string; consent: boolean; asOf: string; demo: boolean; payday: number | null; daysToPayday: number | null; kate: "claude" | "template" }
 export interface Recurring { merchantId: string; merchantName: string; category: string; cadence: string; monthlyAvg: number; currentMonthly: number; occurrences: number; trendPct: number; quality: number }
 export interface Spending { asOf: string; months: number; categories: { category: string; monthlyAvg: number }[]; recurring: Recurring[] }
 export interface HandoffField { key: string; label: string; value: string; required: boolean }
 export interface HandoffPreview { provider: string; purpose: string; fields: HandoffField[] }
 export interface HandoffRedeemed { provider: string; purpose: string; fields: Omit<HandoffField, "required">[] }
 
-export type RiskProfile = "defensief" | "gebalanceerd" | "dynamisch";
+export type Platform = "kbc" | "bolero";
+export interface InvestOption { label: string; expectedReturn: number; risk: string }
 export interface SavingEntry { id: string; date: string; label: string; amount: number; period: "year" | "once" }
-export interface InvestPlan { profile: RiskProfile; lump: number; monthly: number; years: number; startedAt: string }
+export interface InvestPlan { platform: Platform; option: string; lump: number; monthly: number; years: number; startedAt: string }
 export interface Savings {
   realized: number;
   yearly: number;
   entries: SavingEntry[];
   plan: InvestPlan | null;
-  profiles: Record<RiskProfile, { label: string; expectedReturn: number; risk: string }>;
+  platforms: Record<Platform, { label: string; tagline: string; options: Record<string, InvestOption> }>;
 }
 export interface ProjectionPoint { year: number; invested: number; value: number }
 
@@ -106,5 +107,17 @@ export const api = {
   savings: () => call<Savings>("/savings"),
   projection: (p: Omit<InvestPlan, "startedAt">) => call<{ points: ProjectionPoint[] }>("/invest/projection", { method: "POST", body: JSON.stringify(p) }),
   invest: (p: Omit<InvestPlan, "startedAt">) => call<{ plan: InvestPlan }>("/invest", { method: "POST", body: JSON.stringify(p) }),
+  demoDate: (date: string | null) => call<{ asOf: string }>("/demo-date", { method: "POST", body: JSON.stringify({ date }) }),
+  /** GDPR export, downloaded as a file. */
+  exportData: async () => {
+    const res = await fetch("/api/me/export", { headers: { Authorization: `Bearer ${getPersona()}` } });
+    if (!res.ok) throw new ApiError(res.status, "export_failed");
+    const url = URL.createObjectURL(await res.blob());
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "kate-zoom-gegevens.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  },
   reset: () => call<{ ok: true }>("/reset", { method: "POST" }),
 };

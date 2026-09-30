@@ -144,3 +144,71 @@ test("savings ledger: recurring savings accrue per month, one-offs count once", 
   assert.ok(pts[10].value > pts[10].invested, "positive return grows the pot");
   assert.equal(project(1000, 0, 0, 5)[5].value, 1000);
 });
+
+test("organic timing: payday detected, soft tips wait for the end of the customer's month", async () => {
+  const { budgetCycle } = await import("./budget.js");
+  const txs = categorize(thomas.transactions);
+  const endOfMonth = budgetCycle(txs, "2026-09-30");
+  assert.equal(endOfMonth.payday, 1);
+  assert.equal(endOfMonth.daysToPayday, 1);
+  assert.ok(endOfMonth.inSqueeze);
+  assert.ok(endOfMonth.spentSincePayday > 0);
+
+  // 30 Sept: end of month → the energy tip (soft moments only) is pushed, with the budget moment.
+  const sep30 = pickNotification(analyze(thomas, "2026-09-30").insights, thomas, "2026-09-30");
+  assert.equal(sep30.insight?.category, "energy");
+  assert.ok(sep30.insight!.moments.some((m) => m.type === "budget_squeeze"));
+  assert.match(sep30.reason, /Eind van je maand/);
+
+  // 10 Sept: mid-month, nothing urgent → stay quiet even though tips exist.
+  const sep10 = analyze(thomas, "2026-09-10");
+  assert.ok(sep10.insights.length > 0);
+  assert.equal(pickNotification(sep10.insights, thomas, "2026-09-10").insight, null);
+
+  // 15 Sept: mid-month but the Telenet contract window is open → urgent tips may push any day.
+  const sep15 = pickNotification(analyze(thomas, "2026-09-15").insights, thomas, "2026-09-15");
+  assert.ok(sep15.insight);
+  assert.ok(sep15.insight!.moments.some((m) => m.type === "contract_window"));
+  assert.match(sep15.reason, /^Dringend/);
+});
+
+test("investing: KBC profiles and Bolero options, unknown options rejected", async () => {
+  const { optionFor, PLATFORMS } = await import("./savings.js");
+  assert.ok(optionFor("kbc", "gebalanceerd"));
+  assert.ok(optionFor("bolero", "wereld"));
+  assert.equal(optionFor("bolero", "gebalanceerd"), null);
+  assert.equal(Object.keys(PLATFORMS.bolero.options).length, 3);
+});
+
+test("privacy: withdrawing consent erases Kate data and revokes open handoff links", async () => {
+  const { eraseKateData, exportKateData } = await import("./privacy.js");
+  const c = structuredClone(thomas);
+  const energy = analyze(c, AS_OF).insights.find((i) => i.category === "energy")!;
+  const required = previewHandoff(c, energy)!.fields.filter((f) => f.required).map((f) => f.key);
+  const h = createHandoff(c, energy, required);
+  if ("error" in h) throw new Error("unexpected");
+  c.feedback.push({ insightId: energy.id, action: "snooze", at: AS_OF });
+
+  const before = exportKateData(c, AS_OF);
+  assert.ok(before.insights.length > 0 && before.savings.length > 0);
+
+  eraseKateData(c);
+  assert.equal(c.consent, false);
+  assert.deepEqual([c.feedback, c.notified, c.savings], [[], [], []]);
+  assert.equal(redeemHandoff(h.token), null, "open link revoked");
+  assert.equal(exportKateData(c, AS_OF).insights.length, 0);
+  assert.ok(c.transactions.length > 0, "bank records are not Kate's to delete");
+});
+
+test("auth: demo tokens work in dev, never in production", async () => {
+  const { customerForToken } = await import("../store.js");
+  assert.equal(customerForToken("demo-thomas")?.id, "c-thomas");
+  assert.equal(customerForToken("demo-thomas-x"), null);
+  const prev = process.env.NODE_ENV;
+  process.env.NODE_ENV = "production";
+  try {
+    assert.equal(customerForToken("demo-thomas"), null);
+  } finally {
+    process.env.NODE_ENV = prev;
+  }
+});
