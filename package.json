@@ -2,7 +2,7 @@
   "name": "kate-zoom",
   "private": true,
   "version": "0.1.0",
-  "description": "Kate Zoom — KBC hackathon: spending-behaviour analysis that nudges customers to better deals at exactly the right moment.",
+  "description": "Kate Zoom \u2014 KBC hackathon: spending-behaviour analysis that nudges customers to better deals at exactly the right moment.",
   "workspaces": [
     "apps/*"
   ],
@@ -17,6 +17,6 @@
     "concurrently": "^10.0.5"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   }
 }

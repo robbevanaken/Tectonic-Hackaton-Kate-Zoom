@@ -45,9 +45,9 @@ export interface ProductOffer {
 }
 
 export const PRODUCT_OFFERS: ProductOffer[] = [
-  { id: "p-coolblue-xm5", ean: "4548736000017", seller: "Coolblue", price: 329, quality: 4.6, source: "Prijsvergelijking 30/09/2026 (demo)", partnerDeal: "KBC-klantendeal: 2 jaar extra garantie", note: "Zelfde model en kleur, morgen geleverd, 30 dagen bedenktijd" },
-  { id: "p-bol-xm5", ean: "4548736000017", seller: "bol.com", price: 339, quality: 4.3, source: "Prijsvergelijking 30/09/2026 (demo)", note: "Verkocht door bol.com zelf" },
-  { id: "p-market-xm5", ean: "4548736000017", seller: "GadgetDeals (marktplaats)", price: 299, quality: 3.2, source: "Prijsvergelijking 30/09/2026 (demo)", note: "Derde verkoper, lage score" },
+  { id: "p-coolblue-xm5", ean: "4548736000017", seller: "Coolblue", price: 329, quality: 4.6, source: "Prijsvergelijking 30/09/2026", partnerDeal: "KBC-klantendeal: 2 jaar extra garantie", note: "Zelfde model en kleur, morgen geleverd, 30 dagen bedenktijd" },
+  { id: "p-bol-xm5", ean: "4548736000017", seller: "bol.com", price: 339, quality: 4.3, source: "Prijsvergelijking 30/09/2026", note: "Verkocht door bol.com zelf" },
+  { id: "p-market-xm5", ean: "4548736000017", seller: "GadgetDeals (marktplaats)", price: 299, quality: 3.2, source: "Prijsvergelijking 30/09/2026", note: "Derde verkoper, lage score" },
 ];
 
 export const OFFER_BY_ID = new Map(OFFERS.map((o) => [o.id, o]));

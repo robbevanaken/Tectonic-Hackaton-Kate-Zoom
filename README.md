@@ -29,7 +29,7 @@ Full-resolution screens and a description of each are in [docs/screenshots](docs
 ```bash
 npm install
 npm run dev          # API on :4000, KBC-styled app on http://localhost:5180
-npm test             # 17 tests (node:test)
+npm test             # 21 tests (node:test)
 ```
 
 How to walk through the demo, and the design decisions behind it, are in **[DEMO.md](DEMO.md)** (Dutch).

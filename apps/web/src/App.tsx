@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { PhoneFrame } from "@/components/phone";
+import { KateMark } from "@/components/kbc";
 import { Push } from "@/components/push";
 import { HomeScreen } from "@/screens/home";
 import { ZoomOverview } from "@/screens/zoom-overview";
@@ -65,7 +66,8 @@ export default function App() {
         setPersonaState(PERSONAS[0].token);
         return;
       }
-      setError(e instanceof ApiError ? `API ${e.status}: ${e.code}` : "API niet bereikbaar. Draait `npm run dev`?");
+      // Customer-facing wording, never raw status codes.
+      setError(e instanceof ApiError && e.status === 429 ? "Even rustig aan. Probeer het zo opnieuw." : "Kate is even niet bereikbaar. Probeer het zo opnieuw.");
     }
   }, []);
 
@@ -81,6 +83,12 @@ export default function App() {
   };
 
   const closePush = useCallback(() => setPush(null), []);
+
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(null), 5000);
+    return () => clearTimeout(t);
+  }, [error]);
 
   const nav: Nav = useMemo(
     () => ({
@@ -140,7 +148,11 @@ export default function App() {
     <NavContext.Provider value={nav}>
     <div className="flex min-h-full flex-col items-center justify-center lg:flex-row lg:gap-10">
     <PhoneFrame>
-      {error && <div className="absolute inset-x-4 top-14 z-50 rounded-card bg-kbc-red px-4 py-3 text-[13px] font-bold text-white">{error}</div>}
+      {error && (
+        <div role="status" className="absolute inset-x-4 top-14 z-50 flex items-center gap-2 rounded-card bg-kbc-navy px-4 py-3 text-[13px] font-bold text-white shadow-card">
+          <KateMark size={18} className="shrink-0" /> {error}
+        </div>
+      )}
       <Push
         insight={push}
         lead={pushReason.startsWith("Eind van je maand.") && me?.daysToPayday ? (me.daysToPayday === 1 ? "Morgen komt je loon." : `Nog ${me.daysToPayday} dagen tot je loon.`) : undefined}

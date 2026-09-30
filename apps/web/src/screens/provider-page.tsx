@@ -38,7 +38,6 @@ export function ProviderPage({ token, onClose, onSubmitted }: { token: string; o
           <span className="truncate">{slug}.partner.demo/overstappen</span>
         </div>
       </div>
-      <div className="bg-[#FFF6E0] px-4 py-1.5 text-center text-[11px] font-bold text-[#8A6100]">Demo · gesimuleerde aanbieder</div>
 
       <div className="no-scrollbar min-w-0 flex-1 overflow-y-auto px-5 pb-8 pt-5">
         {state === "loading" && <div className="text-[14px] text-kbc-muted">Laden…</div>}

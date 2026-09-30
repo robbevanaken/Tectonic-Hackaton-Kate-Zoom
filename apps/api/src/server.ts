@@ -3,6 +3,7 @@ import helmet from "helmet";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
 import { me } from "./routes/me.js";
+import { jsonBody } from "./json-body.js";
 import { handoff } from "./routes/handoff.js";
 import { kateEnabled } from "./engine/kate.js";
 
@@ -23,7 +24,7 @@ app.use(
   }),
 );
 app.use(cors({ origin: ORIGINS, credentials: false, methods: ["GET", "POST"], allowedHeaders: ["Authorization", "Content-Type"], maxAge: 600 }));
-app.use(express.json({ limit: "10kb", strict: true, type: "application/json" }));
+app.use(jsonBody);
 app.use((_req, res, next) => {
   res.setHeader("Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=(), usb=()");
   next();

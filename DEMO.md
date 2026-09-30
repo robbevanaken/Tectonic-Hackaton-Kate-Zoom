@@ -92,7 +92,7 @@ Kort te vertellen, details in [SECURITY.md](SECURITY.md) en [docs/LEGAL.md](docs
 - Consumentenrecht: KBC-producten en partnerdeals gelabeld, geen voorkeur in de ranking.
 - AI Act: AI-tekst gelabeld, de analyse zelf is geen AI.
 - Techniek: eenmalige tokens, rate limits, strikte headers, demo-logins werken niet in productie, CI met CodeQL,
-  Dependabot en vastgepinde GitHub Actions, 0 kwetsbaarheden (`npm audit`), 0 bevindingen in Semgrep, 17 tests.
+  Dependabot en vastgepinde GitHub Actions, 0 kwetsbaarheden (`npm audit`), 0 bevindingen in Semgrep, 21 tests.
 
 ## 7. Veelgestelde vragen
 

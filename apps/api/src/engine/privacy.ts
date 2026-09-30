@@ -20,7 +20,7 @@ export function exportKateData(c: Customer, asOf: string) {
   const { insights, cycle } = c.consent ? analyze(c, asOf) : { insights: [], cycle: null };
   return {
     exportedAt: new Date().toISOString(),
-    controller: "KBC Bank NV (demo)",
+    controller: "KBC Bank NV",
     purpose: "Kate Zoom: besparingstips op basis van je eigen uitgaven",
     legalBasis: "Toestemming (AVG art. 6.1.a), altijd intrekbaar",
     consent: c.consent,

@@ -15,7 +15,7 @@ Legal and compliance (GDPR, MiFID II, consumer law, AI Act, PSD2) are covered in
 | Secrets in code and full git history | Semgrep `p/secrets` + `p/gitleaks`, history grep | **0** |
 | CI / supply-chain configuration | Semgrep `p/github-actions` | **0 findings** |
 | Dependency licences | license-checker | MIT, ISC, Apache-2.0, BSD only; no copyleft |
-| Unit tests (incl. security behaviour) | `node:test` | **17 / 17 pass** |
+| Unit and HTTP tests (incl. security behaviour) | `node:test` | **21 / 21 pass** |
 | Runtime behaviour | manual probes, see below | as expected |
 
 Runtime probes against the running API:
@@ -48,7 +48,8 @@ Runtime probes against the running API:
 
 - Every body, parameter and query value is validated with **Zod** schemas: enums for actions, strict regexes for ids
   and tokens, numeric ranges for amounts. Unknown investment options are rejected against an allow-list.
-- Bodies are **JSON only, max 10 kB**, parsed in strict mode.
+- Bodies are **JSON only, max 10 kB**, read by our own strict reader (`apps/api/src/json-body.ts`, tested at HTTP level):
+  the byte count is enforced while streaming, also without a `Content-Length`, and only JSON objects or arrays are accepted.
 - React escapes all output; there is no `dangerouslySetInnerHTML` anywhere. LLM output is rendered as plain text.
 
 ### Transport and headers
@@ -107,6 +108,12 @@ Runtime probes against the running API:
   release is never adopted on day one.
 - Dependencies are on current major versions (Express 5, Vite 8, React 19, Zod 4), with a committed lockfile.
 - No secrets in the repository; `.env` is git-ignored and `.env.example` holds no values.
+
+## Known dependency findings
+
+| Finding | Status |
+|---|---|
+| `raw-body` 3.0.2 (via Express → body-parser): an invalid `limit` value silently disables the size check (DoS, low) | **Not reachable.** The fix only exists in `raw-body` 4, which `body-parser` 2.x does not support yet: forcing it breaks every request (tested). We therefore no longer use `express.json()` at all; our own reader in `json-body.ts` never calls `raw-body`, and its limit is a fixed number. Dependabot will pick up a compatible `body-parser` release. |
 
 ## Threat model (summary)
 
