@@ -12,20 +12,21 @@ Every KBC customer already tells the bank, month after month, where their money 
 
 Partners can offer exclusive **KBC-klantendeals**, shown transparently but excluded from the ranking, so the comparison stays on price and quality.
 
-| | | | |
-|---|---|---|---|
-| ![](docs/screenshots/01-home-push.jpg) | ![](docs/screenshots/02-insight-detail.jpg) | ![](docs/screenshots/03-share-consent.jpg) | ![](docs/screenshots/04-provider-prefilled.jpg) |
-| ![](docs/screenshots/05-overview-savings.jpg) | ![](docs/screenshots/06-invest.jpg) | ![](docs/screenshots/07-purchase-tip.jpg) | ![](docs/screenshots/08-settings-organic-timing.jpg) |
+| | | |
+|---|---|---|
+| ![Push at the right moment](docs/screenshots/01-home-push.jpg) | ![Kate Zoom overview](docs/screenshots/02-overview.jpg) | ![Energy tip](docs/screenshots/03-energy-tip.jpg) |
+| ![Choose what to share](docs/screenshots/04-share-consent.jpg) | ![Provider page, prefilled](docs/screenshots/05-provider-prefilled.jpg) | ![Pause streaming services](docs/screenshots/06-streaming-tip.jpg) |
+| ![Same product, cheaper, still returnable](docs/screenshots/07-purchase-tip.jpg) | ![Invest the savings via KBC or Bolero](docs/screenshots/08-invest-bolero.jpg) | ![Consent, data export, organic timing](docs/screenshots/09-settings-organic-timing.jpg) |
 
 ## Run it
 
 ```bash
 npm install
 npm run dev          # API on :4000, KBC-styled app on http://localhost:5180
-npm test             # 16 tests (node:test)
+npm test             # 17 tests (node:test)
 ```
 
-The step-by-step demo script is in **[DEMO.md](DEMO.md)**. Submission text and video script are in [docs/SUBMISSION.md](docs/SUBMISSION.md).
+How to walk through the demo, and the design decisions behind it, are in **[DEMO.md](DEMO.md)** (Dutch).
 
 | Persona | Situation | What Kate does |
 |---|---|---|
@@ -88,6 +89,6 @@ See [SECURITY.md](SECURITY.md) and [docs/LEGAL.md](docs/LEGAL.md) (GDPR, MiFID I
 ```
 apps/api   Express + TypeScript API and the analysis engine (+ tests)
 apps/web   Vite + React + Tailwind KBC-styled app
-docs/      Submission text, video script, screenshots
+docs/      Legal & compliance mapping, screenshots
 DEMO.md    Demo script for the presenter (Dutch)
 ```

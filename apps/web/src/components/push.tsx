@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type PanInfo } from "framer-motion";
 import { KateMark } from "./kbc";
 import { eur, periodLabel } from "@/lib/format";
 import type { Insight } from "@/lib/api";
@@ -22,7 +22,7 @@ export function Push({ insight, lead, onOpen, onClose }: { insight: Insight | nu
           transition={{ type: "spring", stiffness: 380, damping: 32 }}
           drag="y"
           dragConstraints={{ top: 0, bottom: 0 }}
-          onDragEnd={(_, info) => info.offset.y < -40 && onClose()}
+          onDragEnd={(_: unknown, info: PanInfo) => info.offset.y < -40 && onClose()}
           className="absolute inset-x-3 top-12 z-40"
         >
           <button onClick={onOpen} className="flex w-full items-start gap-3 rounded-[22px] bg-white/95 p-3.5 text-left shadow-[0_12px_40px_rgba(0,0,0,0.25)] backdrop-blur">

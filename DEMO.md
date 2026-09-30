@@ -54,7 +54,7 @@ npm run dev        # API op :4000, app op http://localhost:5180
 
 ## 4. Beslissingen die we in de demo vertellen
 
-Dit zijn de keuzes die ons onderscheiden. Noem er minstens vier.
+De keuzes die Kate Zoom onderscheiden, en waar je ze in de demo ziet.
 
 > Toon in de demo dat Kate Zoom op **veel soorten uitgaven** bespaart. Thomas heeft 8 tips: energie, boodschappen,
 > internet, brandstof, gsm, streaming, autoverzekering en een fysieke aankoop.
@@ -73,7 +73,7 @@ Dit zijn de keuzes die ons onderscheiden. Noem er minstens vier.
 | **Analyse is deterministisch, AI schrijft enkel de zin.** | Uitlegbaar en testbaar; AI-tekst wordt gelabeld (AI Act). | *Waarom zie ik dit?* |
 | **Privacy by design.** Opt-in, uitzetten wist alles, download je gegevens. | AVG, en vertrouwen van de klant. | Instellingen |
 
-## 5. Het businessmodel (voor vragen van de jury)
+## 5. Het businessmodel
 
 - **Klant:** bespaart zonder zelf te vergelijken of formulieren in te vullen.
 - **KBC:** meer betrokkenheid in de app, en de besparing stroomt naar KBC-beleggingen of Bolero.
@@ -81,7 +81,7 @@ Dit zijn de keuzes die ons onderscheiden. Noem er minstens vier.
   en betalen per overstap. Een vooringevulde, toegestemde lead converteert veel beter dan een advertentie.
 - **Neutraliteit:** partnerdeals tellen niet mee in de ranking (getest in de code).
 
-## 6. Veiligheid en wetgeving (10% van de score)
+## 6. Veiligheid en wetgeving
 
 Kort te vertellen, details in [SECURITY.md](SECURITY.md) en [docs/LEGAL.md](docs/LEGAL.md):
 
@@ -90,7 +90,7 @@ Kort te vertellen, details in [SECURITY.md](SECURITY.md) en [docs/LEGAL.md](docs
 - Consumentenrecht: KBC-producten en partnerdeals gelabeld, geen voorkeur in de ranking.
 - AI Act: AI-tekst gelabeld, de analyse zelf is geen AI.
 - Techniek: eenmalige tokens, rate limits, strikte headers, demo-logins werken niet in productie, CI met CodeQL,
-  Dependabot en vastgepinde GitHub Actions, 0 kwetsbaarheden in `npm audit`, 16 tests.
+  Dependabot en vastgepinde GitHub Actions, 0 kwetsbaarheden (`npm audit`), 0 bevindingen in Semgrep, 17 tests.
 
 ## 7. Veelgestelde vragen
 
