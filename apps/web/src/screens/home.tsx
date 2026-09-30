@@ -24,12 +24,12 @@ export function HomeScreen({ name, off, top, onOpenSwitch, onOpenInsight, onSett
         </div>
         <div className="mt-3 flex flex-col gap-3 px-4">
           {top ? (
-            <ForYouCard kate highlight icon={<KateMark size={30} />} onClick={() => onOpenInsight(top)}>
+            <ForYouCard kate label="Kate Zoom" highlight icon={<KateMark size={30} />} onClick={() => onOpenInsight(top)}>
               <b>Bespaar {eur(top.savingsYear)} {periodLabel(top.period)}</b>
               <span className="block">{top.whyNow}</span>
             </ForYouCard>
           ) : (
-            <ForYouCard kate icon={<KateMark size={30} />} onClick={off ? onSettings : onOpenSwitch}>
+            <ForYouCard kate label="Kate Zoom" highlight={!off} icon={<KateMark size={30} />} onClick={off ? onSettings : onOpenSwitch}>
               {off ? "Kate Zoom staat uit. Zet aan om te besparen." : "Je vaste kosten zitten goed. Ik hou ze in het oog."}
             </ForYouCard>
           )}

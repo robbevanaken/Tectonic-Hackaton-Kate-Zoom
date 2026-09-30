@@ -115,7 +115,7 @@ export function ShowPayments() {
   );
 }
 
-export function ForYouCard({ icon, children, onClick, onDismiss, kate, highlight }: { icon: ReactNode; children: ReactNode; onClick?: () => void; onDismiss?: () => void; kate?: boolean; highlight?: boolean }) {
+export function ForYouCard({ icon, children, onClick, onDismiss, kate, label = "Kate tip", highlight }: { icon: ReactNode; children: ReactNode; onClick?: () => void; onDismiss?: () => void; kate?: boolean; label?: string; highlight?: boolean }) {
   return (
     <div className="relative">
     <button onClick={onClick} className={`relative flex w-full gap-4 rounded-card bg-white p-4 pr-10 text-left shadow-card ${highlight ? "ring-2 ring-kbc-sky" : ""}`}>
@@ -123,7 +123,7 @@ export function ForYouCard({ icon, children, onClick, onDismiss, kate, highlight
       <span className="mt-1 shrink-0 text-kbc-navy">{icon}</span>
       <span className="min-w-0 flex-1 text-[15px] leading-snug text-kbc-text">
         {kate && (
-          <span className="mb-1 flex items-center gap-1.5 font-extrabold text-kbc-navy"><KateMark size={16} />Kate tip</span>
+          <span className="mb-1 flex items-center gap-1.5 font-extrabold text-kbc-navy"><KateMark size={16} />{label}</span>
         )}
         {children}
       </span>
