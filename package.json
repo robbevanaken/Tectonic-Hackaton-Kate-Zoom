@@ -18,5 +18,11 @@
   },
   "engines": {
     "node": ">=22.12"
+  },
+  "overrides": {
+    "body-parser": "$body-parser"
+  },
+  "dependencies": {
+    "body-parser": "file:packages/body-parser-disabled"
   }
 }

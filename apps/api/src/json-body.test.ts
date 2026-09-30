@@ -63,3 +63,8 @@ test("json body: other content types are not parsed", () =>
     assert.equal(r.status, 200);
     assert.deepEqual(r.json, { body: null });
   }));
+
+test("body-parser stand-in: express.json() fails loudly, raw-body is not installed", async () => {
+  assert.throws(() => express.json(), /disabled in this project/);
+  await assert.rejects(import("raw-body" as string), /Cannot find/);
+});

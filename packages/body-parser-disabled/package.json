@@ -1,0 +1,8 @@
+{
+  "name": "body-parser",
+  "version": "2.3.0-disabled",
+  "private": true,
+  "description": "Stand-in for body-parser. Kate Zoom reads JSON bodies itself (apps/api/src/json-body.ts), so body-parser and its raw-body dependency are not installed at all.",
+  "main": "index.js",
+  "license": "MIT"
+}

@@ -30,7 +30,7 @@ All 22 screens, grouped by story, are in [docs/screenshots](docs/screenshots/).
 ```bash
 npm install
 npm run dev          # API on :4000, KBC-styled app on http://localhost:5180
-npm test             # 21 tests (node:test)
+npm test             # 22 tests (node:test)
 ```
 
 How to walk through the demo, and the design decisions behind it, are in **[DEMO.md](DEMO.md)** (Dutch).

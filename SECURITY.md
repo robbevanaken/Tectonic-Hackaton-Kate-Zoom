@@ -15,7 +15,7 @@ Legal and compliance (GDPR, MiFID II, consumer law, AI Act, PSD2) are covered in
 | Secrets in code and full git history | Semgrep `p/secrets` + `p/gitleaks`, history grep | **0** |
 | CI / supply-chain configuration | Semgrep `p/github-actions` | **0 findings** |
 | Dependency licences | license-checker | MIT, ISC, Apache-2.0, BSD only; no copyleft |
-| Unit and HTTP tests (incl. security behaviour) | `node:test` | **21 / 21 pass** |
+| Unit and HTTP tests (incl. security behaviour) | `node:test` | **22 / 22 pass** |
 | Runtime behaviour | manual probes, see below | as expected |
 
 Runtime probes against the running API:
@@ -113,7 +113,7 @@ Runtime probes against the running API:
 
 | Finding | Status |
 |---|---|
-| `raw-body` 3.0.2 (via Express → body-parser): an invalid `limit` value silently disables the size check (DoS, low) | **Not reachable.** The fix only exists in `raw-body` 4, which `body-parser` 2.x does not support yet: forcing it breaks every request (tested). We therefore no longer use `express.json()` at all; our own reader in `json-body.ts` never calls `raw-body`, and its limit is a fixed number. Dependabot will pick up a compatible `body-parser` release. |
+| `raw-body` 3.0.2 (via Express → body-parser): an invalid `limit` value silently disables the size check (DoS, low) | **Resolved: `raw-body` is no longer installed.** The fix only exists in `raw-body` 4, which `body-parser` 2.x cannot use (forcing it breaks every request, tested). Express only re-exports body-parser's helpers and we never use them, so an npm override replaces `body-parser` with a stand-in (`packages/body-parser-disabled`) that throws if called. JSON bodies are read by our own tested reader (`apps/api/src/json-body.ts`). This removed 7 packages from the tree: body-parser, raw-body, iconv-lite, bytes, content-type, safer-buffer and unpipe. |
 
 ## Threat model (summary)
 
